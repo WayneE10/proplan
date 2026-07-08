@@ -55,7 +55,7 @@ button,input,select,textarea{font:inherit}
 .job-client{font-size:13px;font-weight:900;line-height:1.05;text-align:right;color:#222}
 .job-task{font-size:11px;font-weight:900;color:#53585b;text-transform:uppercase;letter-spacing:.5px}
 .job-meta{display:grid;gap:6px}
-.assigned-staff,.assigned-vehicle{display:flex;flex-direction:column;gap:4px;padding:7px;border-radius:9px;background:#f2f4f3}
+.assigned-staff,.assigned-vehicle{display:flex;flex-direction:column;gap:4px;padding:7px;border-radius:9px;background:#f2f4f3;min-height:26px}
 .assigned-staff.drop-over,.assigned-vehicle.drop-over,.resource-list.drop-over{outline:4px dashed var(--pro-green);outline-offset:-5px}
 .chip{background:#111;color:#fff;padding:5px 7px;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
 .vehicle-chip{background:#fff;color:#111;padding:5px 7px;border:2px solid #cdd4d0;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
@@ -317,6 +317,14 @@ function renderSummary(){
   document.getElementById("installCount").textContent=data.jobs.filter(j=>j.date===dayKey&&j.status==="Install").length;
 }
 
+function moveStaffToPool(name){
+  data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==name));
+}
+
+function moveFleetToPool(name){
+  data.jobs.forEach(j=>{if(j.fleet===name)j.fleet=null});
+}
+
 function bindDragDrop(){
   document.querySelectorAll("[draggable='true']").forEach(el=>{
     el.addEventListener("dragstart",e=>{
@@ -340,27 +348,32 @@ function bindDragDrop(){
         job.leader=zone.dataset.leader;
         job.date=zone.dataset.date;
       }
+
       if(dragged.type==="job"&&zone.dataset.zone==="unallocated"){
         const job=data.jobs.find(j=>j.id===dragged.id);
         job.leader=null;
         job.date=keyDate(currentDate);
       }
-      if(dragged.type==="staff"&&zone.dataset.zone==="jobStaff"){
-        const job=data.jobs.find(j=>j.id===zone.dataset.id);
-        data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==dragged.name));
-        job.staff=job.staff||[];
-        if(!job.staff.includes(dragged.name))job.staff.push(dragged.name);
+
+      if(dragged.type==="staff"){
+        if(zone.dataset.zone==="jobStaff"){
+          const job=data.jobs.find(j=>j.id===zone.dataset.id);
+          moveStaffToPool(dragged.name);
+          job.staff=job.staff||[];
+          if(!job.staff.includes(dragged.name))job.staff.push(dragged.name);
+        }else if(zone.dataset.zone==="availableStaff"){
+          moveStaffToPool(dragged.name);
+        }
       }
-      if(dragged.type==="staff"&&zone.dataset.zone==="availableStaff"){
-        data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==dragged.name));
-      }
-      if(dragged.type==="fleet"&&zone.dataset.zone==="jobFleet"){
-        const job=data.jobs.find(j=>j.id===zone.dataset.id);
-        data.jobs.forEach(j=>{if(j.fleet===dragged.name)j.fleet=null});
-        job.fleet=dragged.name;
-      }
-      if(dragged.type==="fleet"&&zone.dataset.zone==="fleet"){
-        data.jobs.forEach(j=>{if(j.fleet===dragged.name)j.fleet=null});
+
+      if(dragged.type==="fleet"){
+        if(zone.dataset.zone==="jobFleet"){
+          const job=data.jobs.find(j=>j.id===zone.dataset.id);
+          moveFleetToPool(dragged.name);
+          job.fleet=dragged.name;
+        }else if(zone.dataset.zone==="fleet"){
+          moveFleetToPool(dragged.name);
+        }
       }
 
       dragged=null;
