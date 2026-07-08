@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROPlan - Operations Canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e7e34;
+            --primary-dark: #165b27;
+            --primary-light: #2a9d3f;
+            --secondary: #ff6b35;
+            --accent: #004e89;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --neutral-100: #f8f9fa;
+            --neutral-200: #e9ecef;
+            --neutral-300: #dee2e6;
+            --neutral-400: #adb5bd;
+            --neutral-500: #6c757d;
+            --neutral-600: #495057;
+            --neutral-700: #343a40;
+            --neutral-800: #212529;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--neutral-800);
+            background-color: var(--neutral-100);
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            grid-template-rows: 80px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            padding: 0 1.5rem;
+            background-color: white;
+            border-bottom: 1px solid var(--neutral-200);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn, .view-btn, .mode-selector {
+            padding: 0.5rem 1rem;
+            background-color: var(--neutral-200);
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover, .view-btn:hover, .mode-selector:hover {
+            background-color: var(--neutral-300);
+        }
+
+        .view-btn.active, .mode-selector {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .search-box {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--neutral-300);
+            border-radius: 0.5rem;
+            width: 200px;
+            font-size: 0.875rem;
+        }
+
+        .sidebar {
+            grid-column: 1;
+            grid-row: 2;
+            background-color: var(--neutral-800);
+            overflow-y: auto;
+            border-right: 1px solid var(--neutral-700);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--neutral-400);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--neutral-700);
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: var(--neutral-700);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .main-content {
+            grid-column: 2;
+            grid-row: 2;
+            overflow-y: auto;
+            overflow-x: auto;
+            background-color: var(--neutral-100);
+            padding: 1.5rem;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .canvas-container {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .crews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            min-width: 100%;
+        }
+
+        .crew-column {
+            background-color: var(--neutral-100);
+            border: 2px solid var(--neutral-300);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            min-height: 500px;
+        }
+
+        .crew-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--neutral-300);
+        }
+
+        .crew-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .crew-info h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .crew-role {
+            font-size: 0.875rem;
+            color: var(--neutral-500);
+        }
+
+        .crew-count {
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .crew-jobs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .job-card {
+            background-color: white;
+            border-left: 4px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: grab;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            user-select: none;
+        }
+
+        .job-card:active {
+            cursor: grabbing;
+        }
+
+        .job-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .job-card.install {
+            border-left-color: #2ecc71;
+        }
+
+        .job-card.alteration {
+            border-left-color: #f39c12;
+        }
+
+        .job-card.dismantle {
+            border-left-color: #3498db;
+        }
+
+        .job-code {
+            font-size: 0.75rem;
+            color: var(--neutral-500);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-type {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--neutral-200);
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .job-type.install {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .job-type.alteration {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .job-type.dismantle {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .job-name {
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-location {
+            font-size: 0.75rem;
+            color: var(--neutral-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .job-staff {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .staff-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--neutral-300);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            color: var(--neutral-400);
+            font-size: 0.875rem;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--primary);
+            background-color: rgba(30, 126, 52, 0.05);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .unallocated-section, .available-section, .fleet-section {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .jobs-pool, .staff-pool, .fleet-pool {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .staff-avatar-lg {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: var(--neutral-100);
+            border-radius: 0.5rem;
+            cursor: grab;
+            transition: all 0.2s;
+            text-align: center;
+            user-select: none;
+        }
+
+        .staff-avatar-lg:active {
+            cursor: grabbing;
+        }
+
+        .staff-avatar-lg:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .avatar-name {
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .avatar-role {
+            font-size: 0.75rem;
+            color: var(--neutral-500);
+        }
+
+        .vehicle-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: var(--neutral-100);
+            border-radius: 0.5rem;
+            cursor: grab;
+            transition: all 0.2s;
+            text-align: center;
+            user-select: none;
+        }
+
+        .vehicle-card:active {
+            cursor: grabbing;
+        }
+
+        .vehicle-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .vehicle-icon {
+            font-size: 1.5rem;
+        }
+
+        .vehicle-rego {
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .vehicle-type {
+            font-size: 0.75rem;
+            color: var(--neutral-500);
+        }
+
+        .vehicle-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--success);
+            color: white;
+            border-radius: 0.375rem;
+        }
+
+        /* TV Mode */
+        body.tv-mode {
+            font-size: 2rem;
+            line-height: 1.8;
+        }
+
+        body.tv-mode .sidebar {
+            display: none;
+        }
+
+        body.tv-mode .main-content {
+            grid-column: 1 / -1;
+            padding: 2rem;
+        }
+
+        body.tv-mode .header {
+            padding: 2rem;
+            min-height: 120px;
+        }
+
+        body.tv-mode .logo {
+            font-size: 3rem;
+        }
+
+        body.tv-mode .search-box,
+        body.tv-mode .nav-btn,
+        body.tv-mode .view-btn {
+            display: none;
+        }
+
+        body.tv-mode .crews-grid {
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        body.tv-mode .crew-column {
+            padding: 1.5rem;
+            min-height: 800px;
+        }
+
+        body.tv-mode .crew-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 1.5rem;
+        }
+
+        body.tv-mode .crew-info h3 {
+            font-size: 2rem;
+        }
+
+        body.tv-mode .job-card {
+            padding: 1.5rem;
+            border-left-width: 6px;
+        }
+
+        body.tv-mode .job-name {
+            font-size: 1.5rem;
+        }
+
+        body.tv-mode .staff-avatar-lg {
+            padding: 1.5rem;
+        }
+
+        body.tv-mode .avatar-circle {
+            width: 96px;
+            height: 96px;
+            font-size: 2rem;
+        }
+
+        body.tv-mode .avatar-name {
+            font-size: 1.5rem;
+        }
+
+        body.tv-mode .section-title {
+            font-size: 2.5rem;
+        }
+
+        body.tv-mode .drop-zone {
+            display: none;
+        }
+
+        /* Supervisor Mode */
+        body.supervisor-mode .sidebar {
+            display: none;
+        }
+
+        body.supervisor-mode .unallocated-section,
+        body.supervisor-mode .available-section,
+        body.supervisor-mode .fleet-section {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                grid-column: 1;
+            }
+
+            .crews-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="app">
+        
+        <!-- Header -->
+        <header class="header">
+            <h1 class="logo">PROPlan</h1>
+            
+            <div class="header-center">
+                <button id="view-1day" class="view-btn active" data-view="1day">1 Day</button>
+                <button id="view-3day" class="view-btn" data-view="3day">3 Days</button>
+            </div>
+            
+            <input type="text" id="search-box" class="search-box" placeholder="Search jobs, staff...">
+            
+            <select id="mode-selector" class="mode-selector">
+                <option value="dispatch">Dispatch Mode</option>
+                <option value="tv">TV Mode</option>
+                <option value="supervisor">Supervisor Mode</option>
+            </select>
+        </header>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="canvas">📊 Operations Canvas</a>
+                <a href="#" class="nav-item" data-page="jobs">📋 Jobs</a>
+                <a href="#" class="nav-item" data-page="people">👥 People</a>
+                <a href="#" class="nav-item" data-page="fleet">🚚 Fleet</a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Operations Canvas Page -->
+            <div id="canvas-page" class="page active">
+                
+                <!-- Crews Grid -->
+                <div class="canvas-container">
+                    <div id="crews-grid" class="crews-grid"></div>
+                </div>
+                
+                <!-- Unallocated Jobs -->
+                <section class="unallocated-section">
+                    <h3 class="section-title">
+                        📋 UNALLOCATED JOBS
+                        <span class="badge" id="unallocated-count">0</span>
+                    </h3>
+                    <div id="unallocated-jobs" class="jobs-pool"></div>
+                </section>
+                
+                <!-- Available Staff -->
+                <section class="available-section">
+                    <h3 class="section-title">
+                        👥 AVAILABLE STAFF
+                        <span class="badge" id="available-staff-count">0</span>
+                    </h3>
+                    <div id="available-staff" class="staff-pool"></div>
+                </section>
+                
+                <!-- Fleet -->
+                <section class="fleet-section">
+                    <h3 class="section-title">
+                        🚚 FLEET
+                        <span class="badge" id="fleet-count">0</span>
+                    </h3>
+                    <div id="fleet-vehicles" class="fleet-pool"></div>
+                </section>
+                
+            </div>
+            
+            <!-- Jobs Page -->
+            <div id="jobs-page" class="page">
+                <h2>Jobs Management</h2>
+                <p>Coming soon...</p>
+            </div>
+            
+            <!-- People Page -->
+            <div id="people-page" class="page">
+                <h2>Staff Management</h2>
+                <p>Coming soon...</p>
+            </div>
+            
+            <!-- Fleet Page -->
+            <div id="fleet-page" class="page">
+                <h2>Fleet Management</h2>
+                <p>Coming soon...</p>
+            </div>
+            
+        </main>
+        
+    </div>
+
+    <script>
+        // ====================================================================
+        // DATA STORE (localStorage)
+        // ====================================================================
+
+        const store = {
+            crews: [
+                { id: 1, name: 'Chris S', supervisor_id: 1, supervisor_name: 'Chris S' },
+                { id: 2, name: 'Michael S', supervisor_id: 2, supervisor_name: 'Michael S' },
+                { id: 3, name: 'George S', supervisor_id: 3, supervisor_name: 'George S' },
+                { id: 4, name: 'Rocky S', supervisor_id: 4, supervisor_name: 'Rocky S' },
+            ],
+            jobs: [
+                { id: 1, job_code: 'PB26015', name: 'Apollo', location: 'Christchurch Hospital', job_type: 'INSTALL', crew_id: 1, staff_assigned: [1, 2], vehicle_assigned: [1] },
+                { id: 2, job_code: 'PB26016', name: 'Apollo', location: 'Level 2 Offices', job_type: 'ALTERATION', crew_id: 1, staff_assigned: [2, 3], vehicle_assigned: [] },
+                { id: 3, job_code: 'PB26017', name: 'Cook Brothers', location: 'Rolleston', job_type: 'DISMANTLE', crew_id: 2, staff_assigned: [4], vehicle_assigned: [2] },
+                { id: 4, job_code: 'PB26018', name: 'Wolfbrook', location: 'Oakridge', job_type: 'INSTALL', crew_id: 3, staff_assigned: [6], vehicle_assigned: [3] },
+                { id: 5, job_code: 'PB26019', name: 'DNA', location: 'Addington', job_type: 'ALTERATION', crew_id: 3, staff_assigned: [7], vehicle_assigned: [] },
+                { id: 6, job_code: 'PB26021', name: 'Cook Brothers', location: 'Precast Yard', job_type: 'INSTALL', crew_id: 4, staff_assigned: [8], vehicle_assigned: [4] },
+                { id: 7, job_code: 'PB26022', name: 'Apollo', location: 'South Frame', job_type: 'INSTALL', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
+                { id: 8, job_code: 'PB26023', name: 'Cook Brothers', location: 'Site Office', job_type: 'ALTERATION', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
+                { id: 9, job_code: 'PB26024', name: 'DNA', location: 'Storage Shed', job_type: 'DISMANTLE', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
+            ],
+            staff: [
+                { id: 1, name: 'Chris', role: 'Supervisor', crew_id: 1 },
+                { id: 2, name: 'George', role: 'Tradesperson', crew_id: 1 },
+                { id: 3, name: 'Keith', role: 'Labourer', crew_id: 1 },
+                { id: 4, name: 'Michael', role: 'Supervisor', crew_id: 2 },
+                { id: 5, name: 'Larry', role: 'Tradesperson', crew_id: 2 },
+                { id: 6, name: 'George S', role: 'Supervisor', crew_id: 3 },
+                { id: 7, name: 'Sean', role: 'Tradesperson', crew_id: 3 },
+                { id: 8, name: 'Rocky', role: 'Supervisor', crew_id: 4 },
+                { id: 9, name: 'Keith K', role: 'Tradesperson', crew_id: 4 },
+                { id: 10, name: 'Larry L', role: 'Tradesperson', crew_id: null },
+                { id: 11, name: 'Sean L', role: 'Tradesperson', crew_id: null },
+                { id: 12, name: 'Mala', role: 'Tradesperson', crew_id: null },
+                { id: 13, name: 'Wayne', role: 'Tradesperson', crew_id: null },
+                { id: 14, name: 'Khart', role: 'Labourer', crew_id: null },
+                { id: 15, name: 'Jordan', role: 'Labourer', crew_id: null },
+                { id: 16, name: 'Brad', role: 'Tradesperson', crew_id: null },
+                { id: 17, name: 'Alex', role: 'Tradesperson', crew_id: null },
+                { id: 18, name: 'Reece', role: 'Labourer', crew_id: null },
+            ],
+            vehicles: [
+                { id: 1, rego: 'Truck 1', vehicle_type: 'Truck', status: 'available' },
+                { id: 2, rego: 'Truck 2', vehicle_type: 'Truck', status: 'available' },
+                { id: 3, rego: 'Truck 3', vehicle_type: 'Truck', status: 'available' },
+                { id: 4, rego: 'Truck 4', vehicle_type: 'Truck', status: 'available' },
+                { id: 5, rego: 'Ute 1', vehicle_type: 'Ute', status: 'available' },
+                { id: 6, rego: 'Ute 2', vehicle_type: 'Ute', status: 'available' },
+            ],
+
+            load() {
+                const saved = localStorage.getItem('proplan-data');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.crews = data.crews || this.crews;
+                    this.jobs = data.jobs || this.jobs;
+                    this.staff = data.staff || this.staff;
+                    this.vehicles = data.vehicles || this.vehicles;
+                }
+            },
+
+            save() {
+                localStorage.setItem('proplan-data', JSON.stringify({
+                    crews: this.crews,
+                    jobs: this.jobs,
+                    staff: this.staff,
+                    vehicles: this.vehicles,
+                }));
+            },
+
+            getJob(id) {
+                return this.jobs.find(j => j.id === id);
+            },
+
+            getStaff(id) {
+                return this.staff.find(s => s.id === id);
+            },
+
+            getVehicle(id) {
+                return this.vehicles.find(v => v.id === id);
+            },
+
+            getCrewJobs(crewId) {
+                return this.jobs.filter(j => j.crew_id === crewId);
+            },
+
+            getUnallocatedJobs() {
+                return this.jobs.filter(j => j.crew_id === null);
+            },
+
+            getAvailableStaff() {
+                return this.staff.filter(s => s.crew_id === null);
+            },
+        };
+
+        // ====================================================================
+        // DRAG & DROP
+        // ====================================================================
+
+        let draggedItem = null;
+        let draggedType = null;
+
+        function handleDragStart(e, item, type) {
+            draggedItem = item;
+            draggedType = type;
+            e.dataTransfer.effectAllowed = 'move';
+            e.target.style.opacity = '0.5';
+        }
+
+        function handleDragEnd(e) {
+            e.target.style.opacity = '1';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.target.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDropOnCrew(e, crewId) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+
+            if (draggedType === 'job' && draggedItem) {
+                draggedItem.crew_id = crewId;
+                store.save();
+                render();
+            }
+        }
+
+        function handleDropOnJob(e, jobId) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+
+            const job = store.getJob(jobId);
+            if (!job) return;
+
+            if (draggedType === 'staff' && draggedItem) {
+                if (!job.staff_assigned.includes(draggedItem.id)) {
+                    job.staff_assigned.push(draggedItem.id);
+                    store.save();
+                    render();
+                }
+            } else if (draggedType === 'vehicle' && draggedItem) {
+                if (!job.vehicle_assigned.includes(draggedItem.id)) {
+                    job.vehicle_assigned.push(draggedItem.id);
+                    store.save();
+                    render();
+                }
+            }
+        }
+
+        // ====================================================================
+        // RENDERING
+        // ====================================================================
+
+        function render() {
+            renderCrewsGrid();
+            renderUnallocatedJobs();
+            renderAvailableStaff();
+            renderFleetVehicles();
+        }
+
+        function renderCrewsGrid() {
+            const grid = document.getElementById('crews-grid');
+            grid.innerHTML = '';
+
+            store.crews.forEach(crew => {
+                const column = document.createElement('div');
+                column.className = 'crew-column';
+                column.draggable = false;
+                column.addEventListener('dragover', handleDragOver);
+                column.addEventListener('dragleave', handleDragLeave);
+                column.addEventListener('drop', (e) => handleDropOnCrew(e, crew.id));
+
+                const header = document.createElement('div');
+                header.className = 'crew-header';
+                header.innerHTML = `
+                    <div class="crew-avatar">${crew.supervisor_name.charAt(0)}</div>
+                    <div class="crew-info">
+                        <h3>${crew.supervisor_name}</h3>
+                        <p class="crew-role">Supervisor</p>
+                    </div>
+                    <div class="crew-count">
+                        <span>${store.staff.filter(s => s.crew_id === crew.id).length}</span>
+                        <span style="font-size: 0.75rem; color: var(--neutral-500);">staff</span>
+                    </div>
+                `;
+                column.appendChild(header);
+
+                const jobsContainer = document.createElement('div');
+                jobsContainer.className = 'crew-jobs';
+
+                const crewJobs = store.getCrewJobs(crew.id);
+                if (crewJobs.length === 0) {
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.textContent = 'Drag jobs here';
+                    jobsContainer.appendChild(dropZone);
+                } else {
+                    crewJobs.forEach(job => {
+                        const card = createJobCard(job);
+                        jobsContainer.appendChild(card);
+                    });
+                }
+
+                column.appendChild(jobsContainer);
+                grid.appendChild(column);
+            });
+        }
+
+        function createJobCard(job) {
+            const card = document.createElement('div');
+            card.className = `job-card ${job.job_type.toLowerCase()}`;
+            card.draggable = true;
+            card.addEventListener('dragstart', (e) => handleDragStart(e, job, 'job'));
+            card.addEventListener('dragend', handleDragEnd);
+            card.addEventListener('dragover', handleDragOver);
+            card.addEventListener('dragleave', handleDragLeave);
+            card.addEventListener('drop', (e) => handleDropOnJob(e, job.id));
+
+            let staffHtml = '';
+            job.staff_assigned.forEach(staffId => {
+                const staff = store.getStaff(staffId);
+                if (staff) {
+                    staffHtml += `<div class="staff-avatar" title="${staff.name}">${staff.name.charAt(0)}</div>`;
+                }
+            });
+
+            let vehicleHtml = '';
+            if (job.vehicle_assigned.length > 0) {
+                const vehicle = store.getVehicle(job.vehicle_assigned[0]);
+                if (vehicle) {
+                    vehicleHtml = `<div style="font-size: 0.875rem; color: var(--neutral-600); margin-top: 0.5rem;">🚚 ${vehicle.rego}</div>`;
+                }
+            }
+
+            card.innerHTML = `
+                <div class="job-code">${job.job_code}</div>
+                <span class="job-type">${job.job_type}</span>
+                <div class="job-name">${job.name}</div>
+                <div class="job-location">📍 ${job.location}</div>
+                <div class="job-staff">${staffHtml}</div>
+                ${vehicleHtml}
+            `;
+
+            return card;
+        }
+
+        function renderUnallocatedJobs() {
+            const container = document.getElementById('unallocated-jobs');
+            container.innerHTML = '';
+
+            const unallocated = store.getUnallocatedJobs();
+            document.getElementById('unallocated-count').textContent = unallocated.length;
+
+            unallocated.forEach(job => {
+                const card = createJobCard(job);
+                container.appendChild(card);
+            });
+        }
+
+        function renderAvailableStaff() {
+            const container = document.getElementById('available-staff');
+            container.innerHTML = '';
+
+            const available = store.getAvailableStaff();
+            document.getElementById('available-staff-count').textContent = available.length;
+
+            available.forEach(person => {
+                const card = document.createElement('div');
+                card.className = 'staff-avatar-lg';
+                card.draggable = true;
+                card.addEventListener('dragstart', (e) => handleDragStart(e, person, 'staff'));
+                card.addEventListener('dragend', handleDragEnd);
+                card.innerHTML = `
+                    <div class="avatar-circle">${person.name.charAt(0)}</div>
+                    <div class="avatar-name">${person.name}</div>
+                    <div class="avatar-role">${person.role}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderFleetVehicles() {
+            const container = document.getElementById('fleet-vehicles');
+            container.innerHTML = '';
+
+            document.getElementById('fleet-count').textContent = store.vehicles.length;
+
+            store.vehicles.forEach(vehicle => {
+                const card = document.createElement('div');
+                card.className = 'vehicle-card';
+                card.draggable = true;
+                card.addEventListener('dragstart', (e) => handleDragStart(e, vehicle, 'vehicle'));
+                card.addEventListener('dragend', handleDragEnd);
+                const icon = vehicle.vehicle_type === 'Truck' ? '🚚' : '🚐';
+                card.innerHTML = `
+                    <div class="vehicle-icon">${icon}</div>
+                    <div class="vehicle-rego">${vehicle.rego}</div>
+                    <div class="vehicle-type">${vehicle.vehicle_type}</div>
+                    <div class="vehicle-status">${vehicle.status}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ====================================================================
+        // EVENTS
+        // ====================================================================
+
+        document.getElementById('mode-selector').addEventListener('change', (e) => {
+            document.body.className = '';
+            document.body.classList.add(`${e.target.value}-mode`);
+        });
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                
+                const page = item.dataset.page;
+                document.getElementById(`${page}-page`).classList.add('active');
+                item.classList.add('active');
+            });
+        });
+
+        document.getElementById('search-box').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.job-card, .staff-avatar-lg').forEach(el => {
+                const text = el.textContent.toLowerCase();
+                el.style.display = text.includes(term) ? 'block' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+
+        // ====================================================================
+        // INITIALIZE
+        // ====================================================================
+
+        store.load();
+        render();
+    </script>
+</body>
+</html>
