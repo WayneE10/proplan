@@ -1,184 +1,464 @@
-# PROPlan Development Guide
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PROPlan v0.2 - Operations Canvas</title>
+<style>
+:root{--pro-green:#00843D;--pro-grey:#6f7377;--black:#101214;--white:#fff;--bg:#eef1ef;--line:#d9dedb;--soft:#f7f8f7;--install:#00843D;--dismantle:#D32F2F;--alteration:#F28C28}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--black);overflow:hidden}
+.app{display:grid;grid-template-columns:210px 1fr;height:100vh}
+.sidebar{background:#101214;color:#fff;padding:22px 16px;display:flex;flex-direction:column;gap:18px}
+.logo{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1;padding:6px 4px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
+.logo .pro{color:var(--pro-green)}
+.logo .plan{color:#b7b9bb}
+.nav{display:flex;flex-direction:column;gap:8px}
+.nav button{border:0;background:transparent;color:#d8dcda;text-align:left;padding:14px 12px;border-radius:10px;font-weight:900;font-size:15px;cursor:pointer}
+.nav button.active,.nav button:hover{background:#24282b;color:#fff}
+.sidebar-footer{margin-top:auto;font-size:12px;color:#8d9290;font-weight:700;line-height:1.4}
+.main{display:grid;grid-template-rows:auto auto 1fr auto;gap:14px;padding:16px;min-width:0;overflow:hidden}
+.header{background:#fff;border-radius:18px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 6px 22px rgba(0,0,0,.08);gap:16px}
+.title h1{font-size:30px;font-weight:900;letter-spacing:-.4px}
+.title p{color:#63686b;font-weight:800;margin-top:3px;font-size:14px}
+.header-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+button,input,select,textarea{font:inherit}
+.btn{border:0;background:#111;color:white;padding:10px 13px;border-radius:10px;font-weight:900;cursor:pointer}
+.btn.green{background:var(--pro-green)}
+.btn.light{background:#edf0ee;color:#111}
+.btn.active{background:#111;color:#fff}
+.date-label{min-width:240px;text-align:center;font-weight:900}
+.search{border:2px solid var(--line);border-radius:10px;padding:10px 12px;width:210px}
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.summary-card{background:#fff;border-radius:16px;padding:13px 14px;box-shadow:0 4px 18px rgba(0,0,0,.07)}
+.summary-card b{display:block;font-size:26px;font-weight:900}
+.summary-card span{color:#6c7174;font-size:12px;font-weight:900;text-transform:uppercase}
+.canvas-wrap{background:#fff;border-radius:20px;padding:14px;box-shadow:0 8px 28px rgba(0,0,0,.09);min-height:0;overflow:auto;flex:1}
+.canvas-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
+.canvas-head h2{font-size:19px;font-weight:900;text-transform:uppercase;letter-spacing:.5px}
+.canvas-note{color:#6a6f72;font-weight:800;font-size:13px}
+.days{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;width:100%}
+.day-board{border:2px solid var(--line);border-radius:16px;overflow:hidden;background:#fbfcfb}
+.day-title{background:#101214;color:#fff;padding:10px 12px;font-weight:900;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.crew-lane{border:2px solid var(--line);border-radius:12px;background:#fff;min-height:100px;padding:8px}
+.crew-lane.drop-over{outline:5px dashed var(--pro-green);outline-offset:-6px;background:#f3faf5}
+.job-card{border:2px solid var(--line);border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 3px 13px rgba(0,0,0,.08);margin-bottom:6px;cursor:grab}
+.job-card.dragging{opacity:.55}
+.job-status{color:#fff;padding:7px 10px;font-weight:900;text-transform:uppercase;letter-spacing:.6px;font-size:11px}
+.job-card.install .job-status{background:var(--install)}
+.job-card.dismantle .job-status{background:var(--dismantle)}
+.job-card.alteration .job-status{background:var(--alteration)}
+.job-body{padding:10px;display:grid;gap:7px}
+.job-top{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
+.job-no{font-size:15px;font-weight:900;line-height:1.05}
+.job-client{font-size:13px;font-weight:900;line-height:1.05;text-align:right;color:#222}
+.job-task{font-size:11px;font-weight:900;color:#53585b;text-transform:uppercase;letter-spacing:.5px}
+.job-meta{display:grid;gap:6px}
+.assigned-staff,.assigned-vehicle{display:flex;flex-direction:column;gap:4px;padding:7px;border-radius:9px;background:#f2f4f3;min-height:26px}
+.assigned-staff.drop-over,.assigned-vehicle.drop-over,.resource-list.drop-over{outline:4px dashed var(--pro-green);outline-offset:-5px}
+.chip{background:#111;color:#fff;padding:5px 7px;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
+.vehicle-chip{background:#fff;color:#111;padding:5px 7px;border:2px solid #cdd4d0;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
+.note{color:#555;font-size:10px;font-weight:800;line-height:1.2}
+.mini-job{width:160px;flex:0 0 auto}
 
-## Sprint 1 Status
+/* Split resizable bottom panels */
+.resources-container{display:grid;grid-template-rows:auto;gap:10px;height:50%;overflow:hidden}
+.resources-split{display:grid;grid-template-columns:minmax(220px,1fr) 8px minmax(220px,1fr) 8px minmax(220px,1fr);gap:0;height:100%;min-height:180px;overflow:hidden}
+.splitter{background:#cfd5d1;cursor:col-resize;border-radius:999px;position:relative}
+.splitter::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%);background:#9aa39f}
+.panel{background:#fff;border-radius:18px;padding:12px;box-shadow:0 6px 22px rgba(0,0,0,.08);min-width:0;display:flex;flex-direction:column;overflow:hidden;min-height:180px}
+.panel h3{font-size:14px;font-weight:900;text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.count{background:#111;color:#fff;border-radius:999px;padding:2px 6px;font-size:11px;font-weight:900}
+.resource-list{min-height:60px;background:#f5f7f6;border-radius:12px;padding:8px;display:flex;gap:6px;flex-wrap:wrap;align-content:flex-start;overflow:auto;flex:1}
+.empty{color:#8c9290;font-weight:900;padding:6px;font-size:11px}
 
-**Goal**: Build the Operations Canvas MVP
+dialog{border:0;border-radius:18px;box-shadow:0 22px 70px rgba(0,0,0,.38);width:min(560px,95vw);padding:0}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+form{padding:22px;display:grid;gap:12px}
+form h2{font-size:24px}
+label{display:grid;gap:5px;font-weight:900}
+input,select,textarea{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+textarea{min-height:80px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
 
-### Week 1: Foundation ✅
-- [x] Data models (Crew, Job, Staff, Vehicle)
-- [x] Flask backend skeleton
-- [x] API endpoints structure
-- [x] Frontend HTML/CSS layout
-- [x] Mock data for demo
+body.tv .sidebar{display:none}
+body.tv .app{grid-template-columns:1fr}
+body.tv .main{padding:22px}
+body.tv .search,body.tv .nav-hide{display:none}
+body.tv .job-no{font-size:25px}
+body.tv .job-client{font-size:23px}
+body.tv .job-task{font-size:18px}
+body.tv .chip,body.tv .vehicle-chip{font-size:18px;padding:8px 12px}
+body.tv .resources-split{min-height:210px}
+body.tv .summary-card b{font-size:32px}
 
-### Week 2: Features & Polish
-- [ ] Live drag-and-drop (jobs → crews)
-- [ ] Drag staff onto jobs
-- [ ] Drag vehicles onto jobs
-- [ ] Three display modes
-- [ ] TV Mode (read-only, auto-refresh)
-- [ ] Supervisor Mode (mobile-optimized)
-- [ ] Search & filter
-- [ ] Real-time data sync
+@media(max-width:1100px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .summary{grid-template-columns:1fr}
+  .days{grid-template-columns:1fr}
+  .header{align-items:flex-start;flex-direction:column}
+  .resources-split{grid-template-columns:1fr;gap:12px}
+  .splitter{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><span class="pro">PRO</span><span class="plan">Plan</span></div>
+    <div class="nav">
+      <button class="active">Operations</button>
+      <button>Jobs</button>
+      <button>People</button>
+      <button>Fleet</button>
+      <button>Reports</button>
+      <button>Settings</button>
+    </div>
+    <div class="sidebar-footer">PROPlan v0.2<br>Operations Canvas<br>Local prototype</div>
+  </aside>
 
----
+  <main class="main">
+    <header class="header">
+      <div class="title">
+        <h1>Operations Canvas</h1>
+        <p>Construction Operations Platform · Plan Smarter. Build Better.</p>
+      </div>
+      <div class="header-controls">
+        <button class="btn light nav-hide" id="prevDay">←</button>
+        <div class="date-label" id="dateLabel">Today</div>
+        <button class="btn light nav-hide" id="nextDay">→</button>
+        <button class="btn active" id="oneDay">1 Day</button>
+        <button class="btn light" id="threeDay">3 Days</button>
+        <button class="btn light" id="toggleExtra">Show E-H</button>
+        <input class="search" id="search" placeholder="Search jobs, staff..."/>
+        <button class="btn light" id="tvMode">TV Mode</button>
+        <button class="btn green" id="newJob">+ New Job</button>
+      </div>
+    </header>
 
-## Running Locally
+    <section class="summary">
+      <div class="summary-card"><b id="jobsToday">0</b><span>Jobs Today</span></div>
+      <div class="summary-card"><b id="staffAvailable">0</b><span>Available Staff</span></div>
+      <div class="summary-card"><b id="fleetAvailable">0</b><span>Available Fleet</span></div>
+      <div class="summary-card"><b id="installCount">0</b><span>Install Jobs</span></div>
+      <div class="summary-card"><b id="clock">--:--</b><span>Live Time</span></div>
+    </section>
 
-### Backend
+    <section class="canvas-wrap">
+      <div class="canvas-head">
+        <h2>Daily Dispatch Board</h2>
+        <div class="canvas-note">Drag jobs to leaders · drag staff and fleet onto jobs</div>
+      </div>
+      <div class="days" id="days"></div>
+    </section>
 
-```bash
-cd backend
+    <section class="resources-container">
+      <div class="resources-split" id="resourcesSplit">
+        <div class="panel" id="panelJobs">
+          <h3>Unallocated Jobs <span class="count" id="unallocatedCount">0</span></h3>
+          <div class="resource-list dropzone" id="unallocatedJobs" data-zone="unallocated"></div>
+        </div>
+        <div class="splitter" data-splitter="1"></div>
+        <div class="panel" id="panelStaff">
+          <h3>Available Staff <span class="count" id="availableStaffCount">0</span></h3>
+          <div class="resource-list dropzone" id="availableStaff" data-zone="availableStaff"></div>
+        </div>
+        <div class="splitter" data-splitter="2"></div>
+        <div class="panel" id="panelFleet">
+          <h3>Truck Fleet <span class="count" id="fleetCount">0</span></h3>
+          <div class="resource-list dropzone" id="fleet" data-zone="fleet"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+<dialog id="jobDialog">
+  <form id="jobForm" method="dialog">
+    <h2>New Job</h2>
+    <label>Job Number <input id="jobNo" placeholder="PB26035" required></label>
+    <label>Client <input id="client" placeholder="Cook Brothers" required></label>
+    <label>Site <input id="site" placeholder="Hornby" required></label>
+    <label>Status <select id="status"><option>Install</option><option>Dismantle</option><option>Alteration</option></select></label>
+    <label>Notes <textarea id="notes" placeholder="Crane booked, induction required..."></textarea></label>
+    <div class="modal-actions">
+      <button type="button" class="btn light" id="cancelJob">Cancel</button>
+      <button type="submit" class="btn green">Save Job</button>
+    </div>
+  </form>
+</dialog>
 
-# Install dependencies
-pip install -r requirements.txt
+<script>
+const leaderMap={"Chris":"Chris","Michael":"Michael","George":"George","Rocky":"Rocky","Sean":"Sean","Dave":"Dave","Tom":"Tom","Larry":"Larry"};
+const leadersAtoD=["Chris","Michael","George","Rocky"];
+const leadersEtoH=["Sean","Dave","Tom","Larry"];
+let showExtra=false;
+let currentDate=new Date();
 
-# Run server
-python app.py
-```
+function keyDate(d){return d.toISOString().slice(0,10)}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function pretty(d){return d.toLocaleDateString("en-NZ",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
 
-Server runs on `http://localhost:5000`
+const seed={
+  jobs:[
+    {id:"PB26015",client:"Apollo",site:"Christchurch Hospital",status:"Install",date:keyDate(new Date()),leader:"Chris",staff:["Chris","George","Keith"],fleet:"Truck 2",notes:"Crane booked"},
+    {id:"PB26016",client:"Cook Brothers",site:"Rolleston",status:"Dismantle",date:keyDate(new Date()),leader:"Michael",staff:["Michael","Larry","Rocky"],fleet:"Truck 1",notes:""},
+    {id:"PB26017",client:"Wolfbrook",site:"Oakridge",status:"Alteration",date:keyDate(new Date()),leader:"George",staff:["George S","Sean"],fleet:"Truck 3",notes:"Site induction"},
+    {id:"PB26018",client:"DNA",site:"Addington",status:"Install",date:keyDate(new Date()),leader:null,staff:[],fleet:null,notes:""}
+  ],
+  staff:["Chris","George","Keith","Michael","Larry","Rocky","George S","Sean","Marc","Tom","Mala","Wayne","Khart","Jordan","Brad","Alex"],
+  fleet:["Truck 1","Truck 2","Truck 3","Truck 4","Ute 1","Ute 2","Trailer 1","Trailer 2"]
+};
 
-### Frontend
+let data=JSON.parse(localStorage.getItem("proplan-v02")||"null")||seed;
+let dragged=null;
 
-Open `frontend/index.html` in your browser, or serve with a simple HTTP server:
+function save(){localStorage.setItem("proplan-v02",JSON.stringify(data))}
 
-```bash
-cd frontend
-python -m http.server 8000
-```
+function render(){
+  document.getElementById("dateLabel").textContent=pretty(currentDate);
+  renderDays();
+  renderResources();
+  renderSummary();
+  bindDragDrop();
+  save();
+}
 
-Then visit `http://localhost:8000`
+function renderDays(){
+  const daysEl=document.getElementById("days");
+  daysEl.innerHTML="";
+  const dayKey=keyDate(currentDate);
+  const leaders=showExtra?leadersAtoD.concat(leadersEtoH):leadersAtoD;
+  leaders.forEach(leader=>{
+    const board=document.createElement("section");
+    board.className="day-board";
+    board.innerHTML=`<div class="day-title">${leaderMap[leader]}</div>`;
+    const lane=document.createElement("div");
+    lane.className="crew-lane dropzone";
+    lane.dataset.zone="leader";
+    lane.dataset.leader=leader;
+    lane.dataset.date=dayKey;
+    const jobs=data.jobs.filter(j=>j.date===dayKey&&j.leader===leader);
+    lane.innerHTML=jobs.length?"" : "<div class='empty'>No Jobs</div>";
+    jobs.forEach(j=>lane.appendChild(jobCard(j)));
+    board.appendChild(lane);
+    daysEl.appendChild(board);
+  });
+}
 
----
+function statusClass(s){return s.toLowerCase()}
 
-## Database Schema
+function jobCard(job){
+  const card=document.createElement("article");
+  card.className=`job-card ${statusClass(job.status)}`;
+  card.draggable=true;
+  card.dataset.type="job";
+  card.dataset.id=job.id;
+  const staff=(job.staff||[]).map(name=>`<span class="chip" draggable="true" data-type="staff" data-name="${name}">${name}</span>`).join("");
+  const fleet=job.fleet?`<span class="vehicle-chip" draggable="true" data-type="fleet" data-name="${job.fleet}">${job.fleet}</span>`:"";
+  card.innerHTML=`
+    <div class="job-status">${job.status}</div>
+    <div class="job-body">
+      <div class="job-top">
+        <div class="job-no">${job.id}</div>
+        <div class="job-client">${job.client}</div>
+      </div>
+      <div class="job-task">${job.status}</div>
+      <div class="job-meta">
+        <div class="assigned-staff dropzone" data-zone="jobStaff" data-id="${job.id}">
+          ${staff || '<span class="empty">Drop staff here</span>'}
+        </div>
+        <div class="assigned-vehicle dropzone" data-zone="jobFleet" data-id="${job.id}">
+          ${fleet || '<span class="empty">Drop vehicle here</span>'}
+        </div>
+        ${job.notes?`<div class="note">Note: ${job.notes}</div>`:""}
+      </div>
+    </div>`;
+  return card;
+}
 
-### Crews
-```
-id (PK)
-name
-supervisor_id (FK)
-supervisor_name
-```
+function renderResources(){
+  const dayKey=keyDate(currentDate);
+  const assignedStaff=new Set(data.jobs.filter(j=>j.date===dayKey).flatMap(j=>j.staff||[]));
+  const assignedFleet=new Set(data.jobs.filter(j=>j.date===dayKey).map(j=>j.fleet).filter(Boolean));
+  const unallocated=data.jobs.filter(j=>j.date===dayKey&&!j.leader);
 
-### Jobs
-```
-id (PK)
-job_code
-name
-location
-job_type (INSTALL, ALTERATION, DISMANTLE)
-crew_id (FK)
-date
-status (pending, in_progress, completed)
-notes
-created_at
-updated_at
-```
+  document.getElementById("unallocatedCount").textContent=unallocated.length;
+  const unallocatedEl=document.getElementById("unallocatedJobs");
+  unallocatedEl.innerHTML="";
+  unallocated.forEach(j=>{const c=jobCard(j);c.classList.add("mini-job");unallocatedEl.appendChild(c)});
+  if(!unallocated.length)unallocatedEl.innerHTML=`<span class="empty">No unallocated jobs</span>`;
 
-### Staff
-```
-id (PK)
-name
-role (Supervisor, Tradesperson, Labourer)
-crew_id (FK)
-available (bool)
-skills (JSON)
-induction_complete (bool)
-```
+  const availableStaff=data.staff.filter(s=>!assignedStaff.has(s));
+  document.getElementById("availableStaffCount").textContent=availableStaff.length;
+  const staffEl=document.getElementById("availableStaff");
+  staffEl.innerHTML="";
+  availableStaff.forEach(name=>staffEl.innerHTML+=`<span class="chip" draggable="true" data-type="staff" data-name="${name}">${name}</span>`);
+  if(!availableStaff.length)staffEl.innerHTML=`<span class="empty">No available staff</span>`;
 
-### Vehicles
-```
-id (PK)
-rego
-vehicle_type (Truck, Ute, Trailer)
-status (available, in_use, maintenance)
-assigned_job_id (FK)
-assigned_crew_id (FK)
-```
+  const availableFleet=data.fleet.filter(f=>!assignedFleet.has(f));
+  document.getElementById("fleetCount").textContent=availableFleet.length;
+  const fleetEl=document.getElementById("fleet");
+  fleetEl.innerHTML="";
+  availableFleet.forEach(name=>fleetEl.innerHTML+=`<span class="vehicle-chip" draggable="true" data-type="fleet" data-name="${name}">${name}</span>`);
+  if(!availableFleet.length)fleetEl.innerHTML=`<span class="empty">No available fleet</span>`;
+}
 
-### Assignments
-```
-id (PK)
-job_id (FK)
-crew_id (FK)
-entity_id (Staff or Vehicle ID)
-entity_type (staff, vehicle)
-assigned_at
-status
-```
+function renderSummary(){
+  const dayKey=keyDate(currentDate);
+  const todayJobs=data.jobs.filter(j=>j.date===dayKey&&j.leader);
+  const assignedStaff=new Set(data.jobs.filter(j=>j.date===dayKey).flatMap(j=>j.staff||[]));
+  const assignedFleet=new Set(data.jobs.filter(j=>j.date===dayKey).map(j=>j.fleet).filter(Boolean));
+  document.getElementById("jobsToday").textContent=todayJobs.length;
+  document.getElementById("staffAvailable").textContent=data.staff.filter(s=>!assignedStaff.has(s)).length;
+  document.getElementById("fleetAvailable").textContent=data.fleet.filter(f=>!assignedFleet.has(f)).length;
+  document.getElementById("installCount").textContent=data.jobs.filter(j=>j.date===dayKey&&j.status==="Install").length;
+}
 
----
+function moveStaffToPool(name){
+  data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==name));
+}
 
-## Architecture Notes
+function moveFleetToPool(name){
+  data.jobs.forEach(j=>{if(j.fleet===name)j.fleet=null});
+}
 
-### Frontend Structure
-```
-frontend/
-├── index.html         # Main app shell
-├── css/
-│   ├── styles.css     # Global styles
-│   ├── dispatch-mode.css
-│   ├── tv-mode.css
-│   └── supervisor-mode.css
-└── js/
-    ├── app.js         # Main app logic
-    ├── api.js         # API client
-    ├── canvas.js      # Canvas rendering
-    ├── drag.js        # Drag-and-drop
-    └── modes.js       # Mode switching
-```
+function bindDragDrop(){
+  document.querySelectorAll("[draggable='true']").forEach(el=>{
+    el.addEventListener("dragstart",e=>{
+      dragged={type:el.dataset.type,id:el.dataset.id,name:el.dataset.name};
+      el.classList.add("dragging");
+      e.dataTransfer.effectAllowed="move";
+    });
+    el.addEventListener("dragend",()=>el.classList.remove("dragging"));
+  });
 
-### Backend Structure
-```
-backend/
-├── app.py             # Flask server
-├── models.py          # Data models
-├── routes.py          # API routes
-├── db.py              # Database setup
-└── requirements.txt   # Dependencies
-```
+  document.querySelectorAll(".dropzone").forEach(zone=>{
+    zone.addEventListener("dragover",e=>{e.preventDefault();zone.classList.add("drop-over")});
+    zone.addEventListener("dragleave",()=>zone.classList.remove("drop-over"));
+    zone.addEventListener("drop",e=>{
+      e.preventDefault();
+      zone.classList.remove("drop-over");
+      if(!dragged)return;
 
-### Communication
-- Frontend makes REST API calls to backend
-- Backend returns JSON
-- No build step, no npm install required
+      if(dragged.type==="job"&&zone.dataset.zone==="leader"){
+        const job=data.jobs.find(j=>j.id===dragged.id);
+        job.leader=zone.dataset.leader;
+        job.date=zone.dataset.date;
+      }
 
----
+      if(dragged.type==="job"&&zone.dataset.zone==="unallocated"){
+        const job=data.jobs.find(j=>j.id===dragged.id);
+        job.leader=null;
+        job.date=keyDate(currentDate);
+      }
 
-## Next Steps
+      if(dragged.type==="staff"){
+        if(zone.dataset.zone==="jobStaff"){
+          const job=data.jobs.find(j=>j.id===zone.dataset.id);
+          moveStaffToPool(dragged.name);
+          job.staff=job.staff||[];
+          if(!job.staff.includes(dragged.name))job.staff.push(dragged.name);
+        }else if(zone.dataset.zone==="availableStaff"){
+          moveStaffToPool(dragged.name);
+        }
+      }
 
-### To complete Sprint 1:
+      if(dragged.type==="fleet"){
+        if(zone.dataset.zone==="jobFleet"){
+          const job=data.jobs.find(j=>j.id===zone.dataset.id);
+          moveFleetToPool(dragged.name);
+          job.fleet=dragged.name;
+        }else if(zone.dataset.zone==="fleet"){
+          moveFleetToPool(dragged.name);
+        }
+      }
 
-1. **Connect backend to database** (PostgreSQL or SQLite)
-2. **Implement database models** in SQLAlchemy
-3. **Populate API endpoints** with actual database queries
-4. **Test drag-and-drop** across all three modes
-5. **Add WebSocket support** for real-time updates
-6. **Deploy to web server** (Render, Fly.io, DigitalOcean)
-7. **Test on 75-inch TV** for TV Mode
+      dragged=null;
+      render();
+    });
+  });
+}
 
----
+function tick(){
+  document.getElementById("clock").textContent=new Date().toLocaleTimeString("en-NZ",{hour:"2-digit",minute:"2-digit"});
+}
 
-## Questions to Answer
+function setupSplitters(){
+  const container=document.getElementById("resourcesSplit");
+  const panelA=document.getElementById("panelJobs");
+  const panelB=document.getElementById("panelStaff");
+  const panelC=document.getElementById("panelFleet");
+  const splitter1=container.querySelector('[data-splitter="1"]');
+  const splitter2=container.querySelector('[data-splitter="2"]');
+  const min=220;
 
-1. **Data source**: How do we get existing crew/job/staff data into the system?
-2. **Authentication**: Do dispatchers need to log in?
-3. **Real-time sync**: How many devices need to see updates simultaneously?
-4. **Data persistence**: Is SQLite enough, or do we need PostgreSQL?
-5. **Server hosting**: Which platform do you prefer?
+  function drag(splitter,left,right){
+    splitter.addEventListener("mousedown",e=>{
+      e.preventDefault();
+      const startX=e.clientX;
+      const leftW=left.getBoundingClientRect().width;
+      const rightW=right.getBoundingClientRect().width;
+      const total=container.getBoundingClientRect().width;
+      const move=ev=>{
+        const dx=ev.clientX-startX;
+        const newLeft=leftW+dx;
+        const newRight=rightW-dx;
+        if(newLeft<min || newRight<min || newLeft>total-min || newRight>total-min) return;
+        left.style.flex=`0 0 ${newLeft}px`;
+        right.style.flex=`0 0 ${newRight}px`;
+      };
+      const up=()=>{
+        window.removeEventListener("mousemove",move);
+        window.removeEventListener("mouseup",up);
+      };
+      window.addEventListener("mousemove",move);
+      window.addEventListener("mouseup",up);
+    });
+  }
 
----
+  drag(splitter1,panelA,panelB);
+  drag(splitter2,panelB,panelC);
+}
 
-## Key Files to Review
+document.getElementById("prevDay").onclick=()=>{currentDate=addDays(currentDate,-1);render()};
+document.getElementById("nextDay").onclick=()=>{currentDate=addDays(currentDate,1);render()};
+document.getElementById("oneDay").onclick=()=>{document.getElementById("oneDay").classList.add("active");document.getElementById("oneDay").classList.remove("light");document.getElementById("threeDay").classList.remove("active");document.getElementById("threeDay").classList.add("light");render()};
+document.getElementById("threeDay").onclick=()=>{document.getElementById("threeDay").classList.add("active");document.getElementById("threeDay").classList.remove("light");document.getElementById("oneDay").classList.remove("active");document.getElementById("oneDay").classList.add("light");render()};
+document.getElementById("toggleExtra").onclick=()=>{showExtra=!showExtra;document.getElementById("toggleExtra").textContent=showExtra?"Hide E-H":"Show E-H";render()};
+document.getElementById("tvMode").onclick=()=>{document.body.classList.toggle("tv")};
+document.getElementById("newJob").onclick=()=>document.getElementById("jobDialog").showModal();
+document.getElementById("cancelJob").onclick=()=>document.getElementById("jobDialog").close();
+document.getElementById("jobForm").onsubmit=e=>{
+  e.preventDefault();
+  data.jobs.push({
+    id:document.getElementById("jobNo").value.trim(),
+    client:document.getElementById("client").value.trim(),
+    site:document.getElementById("site").value.trim(),
+    status:document.getElementById("status").value,
+    date:keyDate(currentDate),
+    leader:null,
+    staff:[],
+    fleet:null,
+    notes:document.getElementById("notes").value.trim()
+  });
+  e.target.reset();
+  document.getElementById("jobDialog").close();
+  render();
+};
+document.getElementById("search").addEventListener("input",e=>{
+  const q=e.target.value.toLowerCase();
+  document.querySelectorAll(".job-card,.chip,.vehicle-chip").forEach(el=>{
+    el.style.display=el.textContent.toLowerCase().includes(q)?"":"none";
+  });
+});
 
-- `frontend/index.html` - Main app shell
-- `frontend/js/app.js` - App initialization and logic
-- `frontend/js/drag.js` - Drag-and-drop handlers
-- `backend/app.py` - Flask server and routes
-- `backend/models.py` - Data structure
+setInterval(tick,1000);
+tick();
+setupSplitters();
+render();
+</script>
+</body>
+</html>
