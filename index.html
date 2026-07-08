@@ -43,28 +43,28 @@ button,input,select,textarea{font:inherit}
 .day-title{background:#101214;color:#fff;padding:10px 12px;font-weight:900;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:6px}
 .crew-lane{border:2px solid var(--line);border-radius:12px;background:#fff;min-height:100px;padding:8px}
 .crew-lane.drop-over{outline:5px dashed var(--pro-green);outline-offset:-6px;background:#f3faf5}
-.job-card{border:2px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 13px rgba(0,0,0,.08);margin-bottom:6px;cursor:grab}
+.job-card{border:2px solid var(--line);border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 3px 13px rgba(0,0,0,.08);margin-bottom:6px;cursor:grab}
 .job-card.dragging{opacity:.55}
-.job-status{color:#fff;padding:6px 8px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;font-size:11px}
+.job-status{color:#fff;padding:7px 10px;font-weight:900;text-transform:uppercase;letter-spacing:.6px;font-size:11px}
 .job-card.install .job-status{background:var(--install)}
 .job-card.dismantle .job-status{background:var(--dismantle)}
 .job-card.alteration .job-status{background:var(--alteration)}
-.job-body{padding:8px;display:grid;gap:6px}
-.job-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.job-no{font-size:14px;font-weight:900;line-height:1.1}
-.job-client{font-size:13px;font-weight:900;line-height:1.1;text-align:right}
-.job-task{font-size:12px;font-weight:900;color:#53585b;text-transform:uppercase}
-.job-meta{display:grid;gap:5px}
-.assigned-staff,.assigned-vehicle{min-height:24px;display:flex;flex-direction:column;gap:4px;padding:6px;border-radius:8px;background:#f2f4f3}
+.job-body{padding:10px;display:grid;gap:7px}
+.job-top{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
+.job-no{font-size:15px;font-weight:900;line-height:1.05}
+.job-client{font-size:13px;font-weight:900;line-height:1.05;text-align:right;color:#222}
+.job-task{font-size:11px;font-weight:900;color:#53585b;text-transform:uppercase;letter-spacing:.5px}
+.job-meta{display:grid;gap:6px}
+.assigned-staff,.assigned-vehicle{display:flex;flex-direction:column;gap:4px;padding:7px;border-radius:9px;background:#f2f4f3}
 .assigned-staff.drop-over,.assigned-vehicle.drop-over,.resource-list.drop-over{outline:4px dashed var(--pro-green);outline-offset:-5px}
-.chip{background:#111;color:#fff;padding:4px 6px;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
-.vehicle-chip{background:#fff;color:#111;padding:4px 6px;border:2px solid #cdd4d0;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
-.note{margin-top:4px;color:#555;font-size:10px;font-weight:800}
+.chip{background:#111;color:#fff;padding:5px 7px;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
+.vehicle-chip{background:#fff;color:#111;padding:5px 7px;border:2px solid #cdd4d0;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
+.note{color:#555;font-size:10px;font-weight:800;line-height:1.2}
 .mini-job{width:160px;flex:0 0 auto}
 
-/* Bottom resizable panels */
+/* Split resizable bottom panels */
 .resources-container{display:grid;grid-template-rows:auto;gap:10px;height:50%;overflow:hidden}
-.resources-split{display:grid;grid-template-columns:1fr 8px 1fr 8px 1fr;gap:0;height:100%;min-height:180px;overflow:hidden}
+.resources-split{display:grid;grid-template-columns:minmax(220px,1fr) 8px minmax(220px,1fr) 8px minmax(220px,1fr);gap:0;height:100%;min-height:180px;overflow:hidden}
 .splitter{background:#cfd5d1;cursor:col-resize;border-radius:999px;position:relative}
 .splitter::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%);background:#9aa39f}
 .panel{background:#fff;border-radius:18px;padding:12px;box-shadow:0 6px 22px rgba(0,0,0,.08);min-width:0;display:flex;flex-direction:column;overflow:hidden;min-height:180px}
@@ -109,7 +109,12 @@ body.tv .summary-card b{font-size:32px}
   <aside class="sidebar">
     <div class="logo"><span class="pro">PRO</span><span class="plan">Plan</span></div>
     <div class="nav">
-      <button class="active">Operations</button><button>Jobs</button><button>People</button><button>Fleet</button><button>Reports</button><button>Settings</button>
+      <button class="active">Operations</button>
+      <button>Jobs</button>
+      <button>People</button>
+      <button>Fleet</button>
+      <button>Reports</button>
+      <button>Settings</button>
     </div>
     <div class="sidebar-footer">PROPlan v0.2<br>Operations Canvas<br>Local prototype</div>
   </aside>
@@ -201,4 +206,246 @@ const seed={
     {id:"PB26015",client:"Apollo",site:"Christchurch Hospital",status:"Install",date:keyDate(new Date()),leader:"Chris",staff:["Chris","George","Keith"],fleet:"Truck 2",notes:"Crane booked"},
     {id:"PB26016",client:"Cook Brothers",site:"Rolleston",status:"Dismantle",date:keyDate(new Date()),leader:"Michael",staff:["Michael","Larry","Rocky"],fleet:"Truck 1",notes:""},
     {id:"PB26017",client:"Wolfbrook",site:"Oakridge",status:"Alteration",date:keyDate(new Date()),leader:"George",staff:["George S","Sean"],fleet:"Truck 3",notes:"Site induction"},
-    {id:"PB26018",client:"DNA",site:"Addington",status:"Install",date:keyDate(new Date()),leader:null,*
+    {id:"PB26018",client:"DNA",site:"Addington",status:"Install",date:keyDate(new Date()),leader:null,staff:[],fleet:null,notes:""}
+  ],
+  staff:["Chris","George","Keith","Michael","Larry","Rocky","George S","Sean","Marc","Tom","Mala","Wayne","Khart","Jordan","Brad","Alex"],
+  fleet:["Truck 1","Truck 2","Truck 3","Truck 4","Ute 1","Ute 2","Trailer 1","Trailer 2"]
+};
+
+let data=JSON.parse(localStorage.getItem("proplan-v02")||"null")||seed;
+let dragged=null;
+
+function save(){localStorage.setItem("proplan-v02",JSON.stringify(data))}
+
+function render(){
+  document.getElementById("dateLabel").textContent=pretty(currentDate);
+  renderDays();
+  renderResources();
+  renderSummary();
+  bindDragDrop();
+  save();
+}
+
+function renderDays(){
+  const daysEl=document.getElementById("days");
+  daysEl.innerHTML="";
+  const dayKey=keyDate(currentDate);
+  const leaders=showExtra?leadersAtoD.concat(leadersEtoH):leadersAtoD;
+  leaders.forEach(leader=>{
+    const board=document.createElement("section");
+    board.className="day-board";
+    board.innerHTML=`<div class="day-title">${leaderMap[leader]}</div>`;
+    const lane=document.createElement("div");
+    lane.className="crew-lane dropzone";
+    lane.dataset.zone="leader";
+    lane.dataset.leader=leader;
+    lane.dataset.date=dayKey;
+    const jobs=data.jobs.filter(j=>j.date===dayKey&&j.leader===leader);
+    lane.innerHTML=jobs.length?"" : "<div class='empty'>No Jobs</div>";
+    jobs.forEach(j=>lane.appendChild(jobCard(j)));
+    board.appendChild(lane);
+    daysEl.appendChild(board);
+  });
+}
+
+function statusClass(s){return s.toLowerCase()}
+
+function jobCard(job){
+  const card=document.createElement("article");
+  card.className=`job-card ${statusClass(job.status)}`;
+  card.draggable=true;
+  card.dataset.type="job";
+  card.dataset.id=job.id;
+  const staff=(job.staff||[]).map(name=>`<span class="chip" draggable="true" data-type="staff" data-name="${name}">${name}</span>`).join("");
+  const fleet=job.fleet?`<span class="vehicle-chip" draggable="true" data-type="fleet" data-name="${job.fleet}">${job.fleet}</span>`:"";
+  card.innerHTML=`
+    <div class="job-status">${job.status}</div>
+    <div class="job-body">
+      <div class="job-top">
+        <div class="job-no">${job.id}</div>
+        <div class="job-client">${job.client}</div>
+      </div>
+      <div class="job-task">${job.status}</div>
+      <div class="job-meta">
+        <div class="assigned-staff dropzone" data-zone="jobStaff" data-id="${job.id}">
+          ${staff || '<span class="empty">Drop staff here</span>'}
+        </div>
+        <div class="assigned-vehicle dropzone" data-zone="jobFleet" data-id="${job.id}">
+          ${fleet || '<span class="empty">Drop vehicle here</span>'}
+        </div>
+        ${job.notes?`<div class="note">Note: ${job.notes}</div>`:""}
+      </div>
+    </div>`;
+  return card;
+}
+
+function renderResources(){
+  const dayKey=keyDate(currentDate);
+  const assignedStaff=new Set(data.jobs.filter(j=>j.date===dayKey).flatMap(j=>j.staff||[]));
+  const assignedFleet=new Set(data.jobs.filter(j=>j.date===dayKey).map(j=>j.fleet).filter(Boolean));
+  const unallocated=data.jobs.filter(j=>j.date===dayKey&&!j.leader);
+
+  document.getElementById("unallocatedCount").textContent=unallocated.length;
+  const unallocatedEl=document.getElementById("unallocatedJobs");
+  unallocatedEl.innerHTML="";
+  unallocated.forEach(j=>{const c=jobCard(j);c.classList.add("mini-job");unallocatedEl.appendChild(c)});
+  if(!unallocated.length)unallocatedEl.innerHTML=`<span class="empty">No unallocated jobs</span>`;
+
+  const availableStaff=data.staff.filter(s=>!assignedStaff.has(s));
+  document.getElementById("availableStaffCount").textContent=availableStaff.length;
+  const staffEl=document.getElementById("availableStaff");
+  staffEl.innerHTML="";
+  availableStaff.forEach(name=>staffEl.innerHTML+=`<span class="chip" draggable="true" data-type="staff" data-name="${name}">${name}</span>`);
+  if(!availableStaff.length)staffEl.innerHTML=`<span class="empty">No available staff</span>`;
+
+  const availableFleet=data.fleet.filter(f=>!assignedFleet.has(f));
+  document.getElementById("fleetCount").textContent=availableFleet.length;
+  const fleetEl=document.getElementById("fleet");
+  fleetEl.innerHTML="";
+  availableFleet.forEach(name=>fleetEl.innerHTML+=`<span class="vehicle-chip" draggable="true" data-type="fleet" data-name="${name}">${name}</span>`);
+  if(!availableFleet.length)fleetEl.innerHTML=`<span class="empty">No available fleet</span>`;
+}
+
+function renderSummary(){
+  const dayKey=keyDate(currentDate);
+  const todayJobs=data.jobs.filter(j=>j.date===dayKey&&j.leader);
+  const assignedStaff=new Set(data.jobs.filter(j=>j.date===dayKey).flatMap(j=>j.staff||[]));
+  const assignedFleet=new Set(data.jobs.filter(j=>j.date===dayKey).map(j=>j.fleet).filter(Boolean));
+  document.getElementById("jobsToday").textContent=todayJobs.length;
+  document.getElementById("staffAvailable").textContent=data.staff.filter(s=>!assignedStaff.has(s)).length;
+  document.getElementById("fleetAvailable").textContent=data.fleet.filter(f=>!assignedFleet.has(f)).length;
+  document.getElementById("installCount").textContent=data.jobs.filter(j=>j.date===dayKey&&j.status==="Install").length;
+}
+
+function bindDragDrop(){
+  document.querySelectorAll("[draggable='true']").forEach(el=>{
+    el.addEventListener("dragstart",e=>{
+      dragged={type:el.dataset.type,id:el.dataset.id,name:el.dataset.name};
+      el.classList.add("dragging");
+      e.dataTransfer.effectAllowed="move";
+    });
+    el.addEventListener("dragend",()=>el.classList.remove("dragging"));
+  });
+
+  document.querySelectorAll(".dropzone").forEach(zone=>{
+    zone.addEventListener("dragover",e=>{e.preventDefault();zone.classList.add("drop-over")});
+    zone.addEventListener("dragleave",()=>zone.classList.remove("drop-over"));
+    zone.addEventListener("drop",e=>{
+      e.preventDefault();
+      zone.classList.remove("drop-over");
+      if(!dragged)return;
+
+      if(dragged.type==="job"&&zone.dataset.zone==="leader"){
+        const job=data.jobs.find(j=>j.id===dragged.id);
+        job.leader=zone.dataset.leader;
+        job.date=zone.dataset.date;
+      }
+      if(dragged.type==="job"&&zone.dataset.zone==="unallocated"){
+        const job=data.jobs.find(j=>j.id===dragged.id);
+        job.leader=null;
+        job.date=keyDate(currentDate);
+      }
+      if(dragged.type==="staff"&&zone.dataset.zone==="jobStaff"){
+        const job=data.jobs.find(j=>j.id===zone.dataset.id);
+        data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==dragged.name));
+        job.staff=job.staff||[];
+        if(!job.staff.includes(dragged.name))job.staff.push(dragged.name);
+      }
+      if(dragged.type==="staff"&&zone.dataset.zone==="availableStaff"){
+        data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==dragged.name));
+      }
+      if(dragged.type==="fleet"&&zone.dataset.zone==="jobFleet"){
+        const job=data.jobs.find(j=>j.id===zone.dataset.id);
+        data.jobs.forEach(j=>{if(j.fleet===dragged.name)j.fleet=null});
+        job.fleet=dragged.name;
+      }
+      if(dragged.type==="fleet"&&zone.dataset.zone==="fleet"){
+        data.jobs.forEach(j=>{if(j.fleet===dragged.name)j.fleet=null});
+      }
+
+      dragged=null;
+      render();
+    });
+  });
+}
+
+function tick(){
+  document.getElementById("clock").textContent=new Date().toLocaleTimeString("en-NZ",{hour:"2-digit",minute:"2-digit"});
+}
+
+function setupSplitters(){
+  const container=document.getElementById("resourcesSplit");
+  const panelA=document.getElementById("panelJobs");
+  const panelB=document.getElementById("panelStaff");
+  const panelC=document.getElementById("panelFleet");
+  const splitter1=container.querySelector('[data-splitter="1"]');
+  const splitter2=container.querySelector('[data-splitter="2"]');
+  const min=220;
+
+  function drag(splitter,left,right){
+    splitter.addEventListener("mousedown",e=>{
+      e.preventDefault();
+      const startX=e.clientX;
+      const leftW=left.getBoundingClientRect().width;
+      const rightW=right.getBoundingClientRect().width;
+      const total=container.getBoundingClientRect().width;
+      const move=ev=>{
+        const dx=ev.clientX-startX;
+        const newLeft=leftW+dx;
+        const newRight=rightW-dx;
+        if(newLeft<min || newRight<min || newLeft>total-min || newRight>total-min) return;
+        left.style.flex=`0 0 ${newLeft}px`;
+        right.style.flex=`0 0 ${newRight}px`;
+      };
+      const up=()=>{
+        window.removeEventListener("mousemove",move);
+        window.removeEventListener("mouseup",up);
+      };
+      window.addEventListener("mousemove",move);
+      window.addEventListener("mouseup",up);
+    });
+  }
+
+  drag(splitter1,panelA,panelB);
+  drag(splitter2,panelB,panelC);
+}
+
+document.getElementById("prevDay").onclick=()=>{currentDate=addDays(currentDate,-1);render()};
+document.getElementById("nextDay").onclick=()=>{currentDate=addDays(currentDate,1);render()};
+document.getElementById("oneDay").onclick=()=>{document.getElementById("oneDay").classList.add("active");document.getElementById("oneDay").classList.remove("light");document.getElementById("threeDay").classList.remove("active");document.getElementById("threeDay").classList.add("light");render()};
+document.getElementById("threeDay").onclick=()=>{document.getElementById("threeDay").classList.add("active");document.getElementById("threeDay").classList.remove("light");document.getElementById("oneDay").classList.remove("active");document.getElementById("oneDay").classList.add("light");render()};
+document.getElementById("toggleExtra").onclick=()=>{showExtra=!showExtra;document.getElementById("toggleExtra").textContent=showExtra?"Hide E-H":"Show E-H";render()};
+document.getElementById("tvMode").onclick=()=>{document.body.classList.toggle("tv")};
+document.getElementById("newJob").onclick=()=>document.getElementById("jobDialog").showModal();
+document.getElementById("cancelJob").onclick=()=>document.getElementById("jobDialog").close();
+document.getElementById("jobForm").onsubmit=e=>{
+  e.preventDefault();
+  data.jobs.push({
+    id:document.getElementById("jobNo").value.trim(),
+    client:document.getElementById("client").value.trim(),
+    site:document.getElementById("site").value.trim(),
+    status:document.getElementById("status").value,
+    date:keyDate(currentDate),
+    leader:null,
+    staff:[],
+    fleet:null,
+    notes:document.getElementById("notes").value.trim()
+  });
+  e.target.reset();
+  document.getElementById("jobDialog").close();
+  render();
+};
+document.getElementById("search").addEventListener("input",e=>{
+  const q=e.target.value.toLowerCase();
+  document.querySelectorAll(".job-card,.chip,.vehicle-chip").forEach(el=>{
+    el.style.display=el.textContent.toLowerCase().includes(q)?"":"none";
+  });
+});
+
+setInterval(tick,1000);
+tick();
+setupSplitters();
+render();
+</script>
+</body>
+</html>
