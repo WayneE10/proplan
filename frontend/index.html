@@ -14,11 +14,9 @@
         :root {
             --primary: #1e7e34;
             --primary-dark: #165b27;
-            --primary-light: #2a9d3f;
-            --secondary: #ff6b35;
-            --accent: #004e89;
             --success: #2ecc71;
             --warning: #f39c12;
+            --info: #3498db;
             --danger: #e74c3c;
             --neutral-100: #f8f9fa;
             --neutral-200: #e9ecef;
@@ -30,12 +28,14 @@
             --neutral-800: #212529;
         }
 
+        html, body {
+            height: 100%;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            font-size: 1rem;
-            line-height: 1.5;
-            color: var(--neutral-800);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--neutral-100);
+            color: var(--neutral-800);
         }
 
         .app {
@@ -43,105 +43,142 @@
             grid-template-columns: 200px 1fr;
             grid-template-rows: 80px 1fr;
             height: 100vh;
-            gap: 0;
         }
 
+        /* HEADER */
         .header {
             grid-column: 1 / -1;
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1.5rem;
             padding: 0 1.5rem;
-            background-color: white;
-            border-bottom: 1px solid var(--neutral-200);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            z-index: 100;
+            gap: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 900;
             color: var(--primary);
         }
 
         .header-center {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            flex: 1;
         }
 
-        .nav-btn, .view-btn, .mode-selector {
-            padding: 0.5rem 1rem;
-            background-color: var(--neutral-200);
+        .nav-btn {
+            padding: 0.5rem 0.75rem;
+            background: var(--neutral-200);
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .date-display {
+            font-weight: 600;
+            color: var(--neutral-700);
+            min-width: 180px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: var(--neutral-200);
+            border: none;
+            border-radius: 0.375rem;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.875rem;
-            transition: all 0.2s;
         }
 
-        .nav-btn:hover, .view-btn:hover, .mode-selector:hover {
-            background-color: var(--neutral-300);
-        }
-
-        .view-btn.active, .mode-selector {
-            background-color: var(--primary);
+        .view-btn.active {
+            background: var(--primary);
             color: white;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .weather {
+            text-align: right;
+            font-size: 0.875rem;
         }
 
         .search-box {
             padding: 0.5rem 1rem;
             border: 1px solid var(--neutral-300);
-            border-radius: 0.5rem;
+            border-radius: 0.375rem;
             width: 200px;
             font-size: 0.875rem;
         }
 
+        .mode-selector {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--neutral-300);
+            border-radius: 0.375rem;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* SIDEBAR */
         .sidebar {
             grid-column: 1;
             grid-row: 2;
-            background-color: var(--neutral-800);
+            background: var(--neutral-800);
             overflow-y: auto;
-            border-right: 1px solid var(--neutral-700);
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
             padding: 1rem 0;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
             color: var(--neutral-400);
             text-decoration: none;
             font-size: 0.875rem;
-            transition: all 0.2s;
             border-left: 3px solid transparent;
+            transition: all 0.2s;
         }
 
         .nav-item:hover {
-            background-color: var(--neutral-700);
+            background: var(--neutral-700);
             color: white;
         }
 
         .nav-item.active {
-            background-color: var(--neutral-700);
+            background: var(--neutral-700);
             color: var(--primary);
             border-left-color: var(--primary);
         }
 
+        /* MAIN CONTENT */
         .main-content {
             grid-column: 2;
             grid-row: 2;
-            overflow-y: auto;
-            overflow-x: auto;
-            background-color: var(--neutral-100);
+            overflow: auto;
             padding: 1.5rem;
         }
 
@@ -153,50 +190,70 @@
             display: block;
         }
 
-        .canvas-container {
-            background-color: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
+        /* CANVAS SECTION */
+        .canvas-wrapper {
+            margin-bottom: 2rem;
         }
 
-        .crews-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            min-width: 100%;
-        }
-
-        .crew-column {
-            background-color: var(--neutral-100);
-            border: 2px solid var(--neutral-300);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            min-height: 500px;
-        }
-
-        .crew-header {
+        .canvas-section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--neutral-500);
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--neutral-300);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* CREWS GRID */
+        .crews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .crew-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .crew-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .crew-avatar {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary);
-            color: white;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
             border-radius: 50%;
             font-weight: 700;
-            font-size: 0.875rem;
+            font-size: 1.25rem;
         }
 
         .crew-info h3 {
@@ -205,184 +262,198 @@
             margin-bottom: 0.25rem;
         }
 
-        .crew-role {
+        .crew-info p {
             font-size: 0.875rem;
-            color: var(--neutral-500);
+            opacity: 0.9;
         }
 
         .crew-count {
             margin-left: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .crew-count-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .crew-count-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
         }
 
         .crew-jobs {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
+            padding: 1rem;
+            min-height: 300px;
         }
 
-        .job-card {
-            background-color: white;
+        .job-item {
+            background: #f8f9fa;
             border-left: 4px solid var(--primary);
             border-radius: 0.5rem;
-            padding: 1rem;
+            padding: 0.875rem;
+            margin-bottom: 0.75rem;
             cursor: grab;
             transition: all 0.2s;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             user-select: none;
         }
 
-        .job-card:active {
+        .job-item:active {
             cursor: grabbing;
         }
 
-        .job-card:hover {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .job-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transform: translateY(-2px);
         }
 
-        .job-card.install {
-            border-left-color: #2ecc71;
+        .job-item.install {
+            border-left-color: var(--success);
         }
 
-        .job-card.alteration {
-            border-left-color: #f39c12;
+        .job-item.alteration {
+            border-left-color: var(--warning);
         }
 
-        .job-card.dismantle {
-            border-left-color: #3498db;
+        .job-item.dismantle {
+            border-left-color: var(--info);
         }
 
-        .job-code {
-            font-size: 0.75rem;
-            color: var(--neutral-500);
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 0.25rem;
-        }
-
-        .job-type {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            background-color: var(--neutral-200);
-            border-radius: 0.375rem;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
+        .job-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
             margin-bottom: 0.5rem;
         }
 
-        .job-type.install {
-            background-color: #d4edda;
+        .job-type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 0.25rem;
+            letter-spacing: 0.03em;
+        }
+
+        .job-type-badge.install {
+            background: #d4edda;
             color: #155724;
         }
 
-        .job-type.alteration {
-            background-color: #fff3cd;
+        .job-type-badge.alteration {
+            background: #fff3cd;
             color: #856404;
         }
 
-        .job-type.dismantle {
-            background-color: #d1ecf1;
+        .job-type-badge.dismantle {
+            background: #d1ecf1;
             color: #0c5460;
         }
 
+        .job-code {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+        }
+
         .job-name {
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             font-weight: 700;
             margin-bottom: 0.25rem;
+            color: var(--neutral-800);
         }
 
         .job-location {
-            font-size: 0.75rem;
-            color: var(--neutral-500);
+            font-size: 0.8rem;
+            color: var(--neutral-600);
             margin-bottom: 0.5rem;
         }
 
-        .job-staff {
+        .job-assignees {
             display: flex;
             flex-wrap: wrap;
             gap: 0.25rem;
-            margin-bottom: 0.5rem;
         }
 
-        .staff-avatar {
+        .assignee-avatar {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 28px;
             height: 28px;
-            background-color: var(--primary);
+            background: var(--primary);
             color: white;
             border-radius: 50%;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .job-vehicle {
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         .drop-zone {
             border: 2px dashed var(--neutral-300);
             border-radius: 0.5rem;
-            padding: 1rem;
+            padding: 2rem 1rem;
             text-align: center;
             color: var(--neutral-400);
             font-size: 0.875rem;
-            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: 80px;
         }
 
         .drop-zone.drag-over {
             border-color: var(--primary);
-            background-color: rgba(30, 126, 52, 0.05);
+            background: rgba(30, 126, 52, 0.05);
         }
 
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 50%;
-            font-size: 0.75rem;
-            font-weight: 700;
-            min-width: 24px;
-            text-align: center;
-        }
-
-        .unallocated-section, .available-section, .fleet-section {
-            background-color: white;
+        /* POOLS */
+        .pool-section {
+            background: white;
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .jobs-pool, .staff-pool, .fleet-pool {
+        .pool-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--neutral-500);
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pool-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
         }
 
-        .staff-avatar-lg {
+        .pool-item {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            padding: 1rem;
-            background-color: var(--neutral-100);
+            padding: 0.75rem;
+            background: var(--neutral-100);
             border-radius: 0.5rem;
             cursor: grab;
             transition: all 0.2s;
@@ -390,57 +461,37 @@
             user-select: none;
         }
 
-        .staff-avatar-lg:active {
+        .pool-item:active {
             cursor: grabbing;
         }
 
-        .staff-avatar-lg:hover {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .pool-item:hover {
+            background: var(--neutral-200);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .avatar-circle {
+        .pool-avatar {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 48px;
-            background-color: var(--primary);
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
             color: white;
             border-radius: 50%;
             font-weight: 700;
-            font-size: 1.125rem;
+            font-size: 1rem;
         }
 
-        .avatar-name {
-            font-size: 0.875rem;
-            font-weight: 700;
-        }
-
-        .avatar-role {
+        .pool-name {
             font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+        }
+
+        .pool-role {
+            font-size: 0.65rem;
             color: var(--neutral-500);
-        }
-
-        .vehicle-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem;
-            background-color: var(--neutral-100);
-            border-radius: 0.5rem;
-            cursor: grab;
-            transition: all 0.2s;
-            text-align: center;
-            user-select: none;
-        }
-
-        .vehicle-card:active {
-            cursor: grabbing;
-        }
-
-        .vehicle-card:hover {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .vehicle-icon {
@@ -448,27 +499,13 @@
         }
 
         .vehicle-rego {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 700;
         }
 
-        .vehicle-type {
-            font-size: 0.75rem;
-            color: var(--neutral-500);
-        }
-
-        .vehicle-status {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            background-color: var(--success);
-            color: white;
-            border-radius: 0.375rem;
-        }
-
-        /* TV Mode */
+        /* TV MODE */
         body.tv-mode {
-            font-size: 2rem;
-            line-height: 1.8;
+            font-size: 1.5rem;
         }
 
         body.tv-mode .sidebar {
@@ -481,12 +518,12 @@
         }
 
         body.tv-mode .header {
-            padding: 2rem;
-            min-height: 120px;
+            padding: 1.5rem;
+            min-height: 100px;
         }
 
         body.tv-mode .logo {
-            font-size: 3rem;
+            font-size: 2.5rem;
         }
 
         body.tv-mode .search-box,
@@ -496,27 +533,16 @@
         }
 
         body.tv-mode .crews-grid {
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 2rem;
         }
 
-        body.tv-mode .crew-column {
-            padding: 1.5rem;
-            min-height: 800px;
+        body.tv-mode .crew-jobs {
+            min-height: 500px;
         }
 
-        body.tv-mode .crew-avatar {
-            width: 80px;
-            height: 80px;
-            font-size: 1.5rem;
-        }
-
-        body.tv-mode .crew-info h3 {
-            font-size: 2rem;
-        }
-
-        body.tv-mode .job-card {
-            padding: 1.5rem;
+        body.tv-mode .job-item {
+            padding: 1.25rem;
             border-left-width: 6px;
         }
 
@@ -524,29 +550,25 @@
             font-size: 1.5rem;
         }
 
-        body.tv-mode .staff-avatar-lg {
-            padding: 1.5rem;
+        body.tv-mode .pool-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         }
 
-        body.tv-mode .avatar-circle {
-            width: 96px;
-            height: 96px;
-            font-size: 2rem;
+        body.tv-mode .pool-item {
+            padding: 1rem;
         }
 
-        body.tv-mode .avatar-name {
+        body.tv-mode .pool-avatar {
+            width: 60px;
+            height: 60px;
             font-size: 1.5rem;
-        }
-
-        body.tv-mode .section-title {
-            font-size: 2.5rem;
         }
 
         body.tv-mode .drop-zone {
             display: none;
         }
 
-        /* Supervisor Mode */
+        /* SUPERVISOR MODE */
         body.supervisor-mode .sidebar {
             display: none;
         }
@@ -555,6 +577,12 @@
         body.supervisor-mode .available-section,
         body.supervisor-mode .fleet-section {
             display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .crews-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
@@ -577,91 +605,107 @@
     </style>
 </head>
 <body>
-    <div id="app" class="app">
+    <div class="app">
         
-        <!-- Header -->
+        <!-- HEADER -->
         <header class="header">
-            <h1 class="logo">PROPlan</h1>
-            
-            <div class="header-center">
-                <button id="view-1day" class="view-btn active" data-view="1day">1 Day</button>
-                <button id="view-3day" class="view-btn" data-view="3day">3 Days</button>
+            <div class="header-left">
+                <h1 class="logo">PROPlan</h1>
             </div>
             
-            <input type="text" id="search-box" class="search-box" placeholder="Search jobs, staff...">
+            <div class="header-center">
+                <button class="nav-btn">←</button>
+                <div class="date-display" id="date-display">Monday, 29 June 2026</div>
+                <button class="nav-btn">→</button>
+                
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="1day">1 Day</button>
+                    <button class="view-btn" data-view="3day">3 Days</button>
+                </div>
+            </div>
             
-            <select id="mode-selector" class="mode-selector">
-                <option value="dispatch">Dispatch Mode</option>
-                <option value="tv">TV Mode</option>
-                <option value="supervisor">Supervisor Mode</option>
-            </select>
+            <div class="header-right">
+                <div class="weather">
+                    <div id="weather-temp">16°C</div>
+                    <div>Christchurch</div>
+                </div>
+                <input type="text" class="search-box" id="search-box" placeholder="Search jobs, staff...">
+                <select class="mode-selector" id="mode-selector">
+                    <option value="dispatch">Dispatch Mode</option>
+                    <option value="tv">TV Mode</option>
+                    <option value="supervisor">Supervisor Mode</option>
+                </select>
+            </div>
         </header>
-        
-        <!-- Sidebar -->
+
+        <!-- SIDEBAR -->
         <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-page="canvas">📊 Operations Canvas</a>
-                <a href="#" class="nav-item" data-page="jobs">📋 Jobs</a>
-                <a href="#" class="nav-item" data-page="people">👥 People</a>
-                <a href="#" class="nav-item" data-page="fleet">🚚 Fleet</a>
-            </nav>
+            <a href="#" class="nav-item active" data-page="canvas">📊 Operations Canvas</a>
+            <a href="#" class="nav-item" data-page="jobs">📋 Jobs</a>
+            <a href="#" class="nav-item" data-page="people">👥 People</a>
+            <a href="#" class="nav-item" data-page="fleet">🚚 Fleet</a>
+            <a href="#" class="nav-item" data-page="reports">📈 Reports</a>
         </aside>
-        
-        <!-- Main Content -->
+
+        <!-- MAIN CONTENT -->
         <main class="main-content">
             
-            <!-- Operations Canvas Page -->
+            <!-- Canvas Page -->
             <div id="canvas-page" class="page active">
                 
                 <!-- Crews Grid -->
-                <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <div class="canvas-section-title">Operations Canvas</div>
                     <div id="crews-grid" class="crews-grid"></div>
                 </div>
                 
                 <!-- Unallocated Jobs -->
-                <section class="unallocated-section">
-                    <h3 class="section-title">
-                        📋 UNALLOCATED JOBS
+                <div class="unallocated-section pool-section">
+                    <div class="pool-title">
+                        📋 Unallocated Jobs
                         <span class="badge" id="unallocated-count">0</span>
-                    </h3>
-                    <div id="unallocated-jobs" class="jobs-pool"></div>
-                </section>
+                    </div>
+                    <div id="unallocated-jobs" class="pool-grid"></div>
+                </div>
                 
                 <!-- Available Staff -->
-                <section class="available-section">
-                    <h3 class="section-title">
-                        👥 AVAILABLE STAFF
+                <div class="available-section pool-section">
+                    <div class="pool-title">
+                        👥 Available Staff
                         <span class="badge" id="available-staff-count">0</span>
-                    </h3>
-                    <div id="available-staff" class="staff-pool"></div>
-                </section>
+                    </div>
+                    <div id="available-staff" class="pool-grid"></div>
+                </div>
                 
                 <!-- Fleet -->
-                <section class="fleet-section">
-                    <h3 class="section-title">
-                        🚚 FLEET
+                <div class="fleet-section pool-section">
+                    <div class="pool-title">
+                        🚚 Fleet
                         <span class="badge" id="fleet-count">0</span>
-                    </h3>
-                    <div id="fleet-vehicles" class="fleet-pool"></div>
-                </section>
+                    </div>
+                    <div id="fleet-vehicles" class="pool-grid"></div>
+                </div>
                 
             </div>
             
-            <!-- Jobs Page -->
+            <!-- Other Pages -->
             <div id="jobs-page" class="page">
                 <h2>Jobs Management</h2>
                 <p>Coming soon...</p>
             </div>
             
-            <!-- People Page -->
             <div id="people-page" class="page">
                 <h2>Staff Management</h2>
                 <p>Coming soon...</p>
             </div>
             
-            <!-- Fleet Page -->
             <div id="fleet-page" class="page">
                 <h2>Fleet Management</h2>
+                <p>Coming soon...</p>
+            </div>
+            
+            <div id="reports-page" class="page">
+                <h2>Reports</h2>
                 <p>Coming soon...</p>
             </div>
             
@@ -671,7 +715,7 @@
 
     <script>
         // ====================================================================
-        // DATA STORE (localStorage)
+        // DATA STORE
         // ====================================================================
 
         const store = {
@@ -680,17 +724,22 @@
                 { id: 2, name: 'Michael S', supervisor_id: 2, supervisor_name: 'Michael S' },
                 { id: 3, name: 'George S', supervisor_id: 3, supervisor_name: 'George S' },
                 { id: 4, name: 'Rocky S', supervisor_id: 4, supervisor_name: 'Rocky S' },
+                { id: 5, name: 'Dave S', supervisor_id: 5, supervisor_name: 'Dave S' },
+                { id: 6, name: 'George', supervisor_id: 6, supervisor_name: 'George' },
+                { id: 7, name: 'Rocky', supervisor_id: 7, supervisor_name: 'Rocky' },
+                { id: 8, name: 'Tom S', supervisor_id: 8, supervisor_name: 'Tom S' },
             ],
             jobs: [
                 { id: 1, job_code: 'PB26015', name: 'Apollo', location: 'Christchurch Hospital', job_type: 'INSTALL', crew_id: 1, staff_assigned: [1, 2], vehicle_assigned: [1] },
-                { id: 2, job_code: 'PB26016', name: 'Apollo', location: 'Level 2 Offices', job_type: 'ALTERATION', crew_id: 1, staff_assigned: [2, 3], vehicle_assigned: [] },
-                { id: 3, job_code: 'PB26017', name: 'Cook Brothers', location: 'Rolleston', job_type: 'DISMANTLE', crew_id: 2, staff_assigned: [4], vehicle_assigned: [2] },
+                { id: 2, job_code: 'PB26016', name: 'Apollo', location: 'Level 2 Offices', job_type: 'ALTERATION', crew_id: 1, staff_assigned: [2, 3], vehicle_assigned: [2] },
+                { id: 3, job_code: 'PB26017', name: 'Cook Brothers', location: 'Rolleston', job_type: 'DISMANTLE', crew_id: 2, staff_assigned: [4], vehicle_assigned: [1] },
                 { id: 4, job_code: 'PB26018', name: 'Wolfbrook', location: 'Oakridge', job_type: 'INSTALL', crew_id: 3, staff_assigned: [6], vehicle_assigned: [3] },
-                { id: 5, job_code: 'PB26019', name: 'DNA', location: 'Addington', job_type: 'ALTERATION', crew_id: 3, staff_assigned: [7], vehicle_assigned: [] },
-                { id: 6, job_code: 'PB26021', name: 'Cook Brothers', location: 'Precast Yard', job_type: 'INSTALL', crew_id: 4, staff_assigned: [8], vehicle_assigned: [4] },
-                { id: 7, job_code: 'PB26022', name: 'Apollo', location: 'South Frame', job_type: 'INSTALL', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
-                { id: 8, job_code: 'PB26023', name: 'Cook Brothers', location: 'Site Office', job_type: 'ALTERATION', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
-                { id: 9, job_code: 'PB26024', name: 'DNA', location: 'Storage Shed', job_type: 'DISMANTLE', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
+                { id: 5, job_code: 'PB26019', name: 'DNA', location: 'Addington', job_type: 'ALTERATION', crew_id: 3, staff_assigned: [7], vehicle_assigned: [4] },
+                { id: 6, job_code: 'PB26021', name: 'Cook Brothers', location: 'Precast Yard', job_type: 'INSTALL', crew_id: 4, staff_assigned: [8], vehicle_assigned: [2] },
+                { id: 7, job_code: 'PB26020', name: 'Dave Parker', location: 'Prebbleton', job_type: 'DISMANTLE', crew_id: 5, staff_assigned: [10, 11], vehicle_assigned: [4] },
+                { id: 8, job_code: 'PB26022', name: 'Apollo', location: 'South Frame', job_type: 'INSTALL', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
+                { id: 9, job_code: 'PB26023', name: 'Cook Brothers', location: 'Site Office', job_type: 'ALTERATION', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
+                { id: 10, job_code: 'PB26024', name: 'DNA', location: 'Storage Shed', job_type: 'DISMANTLE', crew_id: null, staff_assigned: [], vehicle_assigned: [] },
             ],
             staff: [
                 { id: 1, name: 'Chris', role: 'Supervisor', crew_id: 1 },
@@ -702,23 +751,27 @@
                 { id: 7, name: 'Sean', role: 'Tradesperson', crew_id: 3 },
                 { id: 8, name: 'Rocky', role: 'Supervisor', crew_id: 4 },
                 { id: 9, name: 'Keith K', role: 'Tradesperson', crew_id: 4 },
-                { id: 10, name: 'Larry L', role: 'Tradesperson', crew_id: null },
-                { id: 11, name: 'Sean L', role: 'Tradesperson', crew_id: null },
-                { id: 12, name: 'Mala', role: 'Tradesperson', crew_id: null },
-                { id: 13, name: 'Wayne', role: 'Tradesperson', crew_id: null },
-                { id: 14, name: 'Khart', role: 'Labourer', crew_id: null },
-                { id: 15, name: 'Jordan', role: 'Labourer', crew_id: null },
-                { id: 16, name: 'Brad', role: 'Tradesperson', crew_id: null },
-                { id: 17, name: 'Alex', role: 'Tradesperson', crew_id: null },
-                { id: 18, name: 'Reece', role: 'Labourer', crew_id: null },
+                { id: 10, name: 'Marc', role: 'Tradesperson', crew_id: 5 },
+                { id: 11, name: 'Tom', role: 'Tradesperson', crew_id: 5 },
+                { id: 12, name: 'Larry L', role: 'Tradesperson', crew_id: null },
+                { id: 13, name: 'Sean L', role: 'Tradesperson', crew_id: null },
+                { id: 14, name: 'Mala', role: 'Tradesperson', crew_id: null },
+                { id: 15, name: 'Wayne', role: 'Tradesperson', crew_id: null },
+                { id: 16, name: 'Khart', role: 'Labourer', crew_id: null },
+                { id: 17, name: 'Jordan', role: 'Labourer', crew_id: null },
+                { id: 18, name: 'Brad', role: 'Tradesperson', crew_id: null },
+                { id: 19, name: 'Alex', role: 'Tradesperson', crew_id: null },
+                { id: 20, name: 'Reece', role: 'Labourer', crew_id: null },
             ],
             vehicles: [
-                { id: 1, rego: 'Truck 1', vehicle_type: 'Truck', status: 'available' },
-                { id: 2, rego: 'Truck 2', vehicle_type: 'Truck', status: 'available' },
-                { id: 3, rego: 'Truck 3', vehicle_type: 'Truck', status: 'available' },
-                { id: 4, rego: 'Truck 4', vehicle_type: 'Truck', status: 'available' },
-                { id: 5, rego: 'Ute 1', vehicle_type: 'Ute', status: 'available' },
-                { id: 6, rego: 'Ute 2', vehicle_type: 'Ute', status: 'available' },
+                { id: 1, rego: 'Truck 1', vehicle_type: 'Truck' },
+                { id: 2, rego: 'Truck 2', vehicle_type: 'Truck' },
+                { id: 3, rego: 'Truck 3', vehicle_type: 'Truck' },
+                { id: 4, rego: 'Truck 4', vehicle_type: 'Truck' },
+                { id: 5, rego: 'Ute 1', vehicle_type: 'Ute' },
+                { id: 6, rego: 'Ute 2', vehicle_type: 'Ute' },
+                { id: 7, rego: 'Trailer 1', vehicle_type: 'Trailer' },
+                { id: 8, rego: 'Trailer 2', vehicle_type: 'Trailer' },
             ],
 
             load() {
@@ -741,29 +794,12 @@
                 }));
             },
 
-            getJob(id) {
-                return this.jobs.find(j => j.id === id);
-            },
-
-            getStaff(id) {
-                return this.staff.find(s => s.id === id);
-            },
-
-            getVehicle(id) {
-                return this.vehicles.find(v => v.id === id);
-            },
-
-            getCrewJobs(crewId) {
-                return this.jobs.filter(j => j.crew_id === crewId);
-            },
-
-            getUnallocatedJobs() {
-                return this.jobs.filter(j => j.crew_id === null);
-            },
-
-            getAvailableStaff() {
-                return this.staff.filter(s => s.crew_id === null);
-            },
+            getJob(id) { return this.jobs.find(j => j.id === id); },
+            getStaff(id) { return this.staff.find(s => s.id === id); },
+            getVehicle(id) { return this.vehicles.find(v => v.id === id); },
+            getCrewJobs(crewId) { return this.jobs.filter(j => j.crew_id === crewId); },
+            getUnallocatedJobs() { return this.jobs.filter(j => j.crew_id === null); },
+            getAvailableStaff() { return this.staff.filter(s => s.crew_id === null); },
         };
 
         // ====================================================================
@@ -787,16 +823,21 @@
         function handleDragOver(e) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
-            e.target.classList.add('drag-over');
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.add('drag-over');
+            }
         }
 
         function handleDragLeave(e) {
-            e.target.classList.remove('drag-over');
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.remove('drag-over');
+            }
         }
 
         function handleDropOnCrew(e, crewId) {
             e.preventDefault();
-            e.target.classList.remove('drag-over');
+            e.stopPropagation();
+            document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
 
             if (draggedType === 'job' && draggedItem) {
                 draggedItem.crew_id = crewId;
@@ -807,7 +848,7 @@
 
         function handleDropOnJob(e, jobId) {
             e.preventDefault();
-            e.target.classList.remove('drag-over');
+            e.stopPropagation();
 
             const job = store.getJob(jobId);
             if (!job) return;
@@ -819,11 +860,9 @@
                     render();
                 }
             } else if (draggedType === 'vehicle' && draggedItem) {
-                if (!job.vehicle_assigned.includes(draggedItem.id)) {
-                    job.vehicle_assigned.push(draggedItem.id);
-                    store.save();
-                    render();
-                }
+                job.vehicle_assigned = [draggedItem.id];
+                store.save();
+                render();
             }
         }
 
@@ -843,12 +882,8 @@
             grid.innerHTML = '';
 
             store.crews.forEach(crew => {
-                const column = document.createElement('div');
-                column.className = 'crew-column';
-                column.draggable = false;
-                column.addEventListener('dragover', handleDragOver);
-                column.addEventListener('dragleave', handleDragLeave);
-                column.addEventListener('drop', (e) => handleDropOnCrew(e, crew.id));
+                const card = document.createElement('div');
+                card.className = 'crew-card';
 
                 const header = document.createElement('div');
                 header.className = 'crew-header';
@@ -856,51 +891,54 @@
                     <div class="crew-avatar">${crew.supervisor_name.charAt(0)}</div>
                     <div class="crew-info">
                         <h3>${crew.supervisor_name}</h3>
-                        <p class="crew-role">Supervisor</p>
+                        <p>Supervisor</p>
                     </div>
                     <div class="crew-count">
-                        <span>${store.staff.filter(s => s.crew_id === crew.id).length}</span>
-                        <span style="font-size: 0.75rem; color: var(--neutral-500);">staff</span>
+                        <div class="crew-count-number">${store.staff.filter(s => s.crew_id === crew.id).length}</div>
+                        <div class="crew-count-label">staff</div>
                     </div>
                 `;
-                column.appendChild(header);
+                card.appendChild(header);
 
-                const jobsContainer = document.createElement('div');
-                jobsContainer.className = 'crew-jobs';
+                const jobs = document.createElement('div');
+                jobs.className = 'crew-jobs';
 
                 const crewJobs = store.getCrewJobs(crew.id);
                 if (crewJobs.length === 0) {
                     const dropZone = document.createElement('div');
                     dropZone.className = 'drop-zone';
-                    dropZone.textContent = 'Drag jobs here';
-                    jobsContainer.appendChild(dropZone);
+                    dropZone.textContent = '+ Drag jobs here';
+                    dropZone.addEventListener('dragover', handleDragOver);
+                    dropZone.addEventListener('dragleave', handleDragLeave);
+                    dropZone.addEventListener('drop', (e) => handleDropOnCrew(e, crew.id));
+                    jobs.appendChild(dropZone);
                 } else {
                     crewJobs.forEach(job => {
-                        const card = createJobCard(job);
-                        jobsContainer.appendChild(card);
+                        const jobEl = createJobElement(job);
+                        jobs.appendChild(jobEl);
                     });
                 }
 
-                column.appendChild(jobsContainer);
-                grid.appendChild(column);
+                card.appendChild(jobs);
+                grid.appendChild(card);
             });
         }
 
-        function createJobCard(job) {
-            const card = document.createElement('div');
-            card.className = `job-card ${job.job_type.toLowerCase()}`;
-            card.draggable = true;
-            card.addEventListener('dragstart', (e) => handleDragStart(e, job, 'job'));
-            card.addEventListener('dragend', handleDragEnd);
-            card.addEventListener('dragover', handleDragOver);
-            card.addEventListener('dragleave', handleDragLeave);
-            card.addEventListener('drop', (e) => handleDropOnJob(e, job.id));
+        function createJobElement(job) {
+            const el = document.createElement('div');
+            el.className = `job-item ${job.job_type.toLowerCase()}`;
+            el.draggable = true;
+            el.addEventListener('dragstart', (e) => handleDragStart(e, job, 'job'));
+            el.addEventListener('dragend', handleDragEnd);
+            el.addEventListener('dragover', handleDragOver);
+            el.addEventListener('dragleave', handleDragLeave);
+            el.addEventListener('drop', (e) => handleDropOnJob(e, job.id));
 
             let staffHtml = '';
-            job.staff_assigned.forEach(staffId => {
+            job.staff_assigned.slice(0, 4).forEach(staffId => {
                 const staff = store.getStaff(staffId);
                 if (staff) {
-                    staffHtml += `<div class="staff-avatar" title="${staff.name}">${staff.name.charAt(0)}</div>`;
+                    staffHtml += `<div class="assignee-avatar" title="${staff.name}">${staff.name.charAt(0)}</div>`;
                 }
             });
 
@@ -908,20 +946,24 @@
             if (job.vehicle_assigned.length > 0) {
                 const vehicle = store.getVehicle(job.vehicle_assigned[0]);
                 if (vehicle) {
-                    vehicleHtml = `<div style="font-size: 0.875rem; color: var(--neutral-600); margin-top: 0.5rem;">🚚 ${vehicle.rego}</div>`;
+                    vehicleHtml = `<div class="job-vehicle">🚚 ${vehicle.rego}</div>`;
                 }
             }
 
-            card.innerHTML = `
-                <div class="job-code">${job.job_code}</div>
-                <span class="job-type">${job.job_type}</span>
+            el.innerHTML = `
+                <div class="job-header">
+                    <div>
+                        <div class="job-code">${job.job_code}</div>
+                        <span class="job-type-badge ${job.job_type.toLowerCase()}">${job.job_type}</span>
+                    </div>
+                </div>
                 <div class="job-name">${job.name}</div>
                 <div class="job-location">📍 ${job.location}</div>
-                <div class="job-staff">${staffHtml}</div>
+                <div class="job-assignees">${staffHtml}</div>
                 ${vehicleHtml}
             `;
 
-            return card;
+            return el;
         }
 
         function renderUnallocatedJobs() {
@@ -932,8 +974,24 @@
             document.getElementById('unallocated-count').textContent = unallocated.length;
 
             unallocated.forEach(job => {
-                const card = createJobCard(job);
-                container.appendChild(card);
+                const el = document.createElement('div');
+                el.className = `pool-item`;
+                el.draggable = true;
+                el.addEventListener('dragstart', (e) => handleDragStart(e, job, 'job'));
+                el.addEventListener('dragend', handleDragEnd);
+
+                const badge = `<span style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.6rem; font-weight: 700; background: ${
+                    job.job_type === 'INSTALL' ? '#d4edda' : job.job_type === 'ALTERATION' ? '#fff3cd' : '#d1ecf1'
+                }; color: ${
+                    job.job_type === 'INSTALL' ? '#155724' : job.job_type === 'ALTERATION' ? '#856404' : '#0c5460'
+                }; border-radius: 0.25rem; text-transform: uppercase;">${job.job_type}</span>`;
+
+                el.innerHTML = `
+                    ${badge}
+                    <div class="pool-name">${job.name}</div>
+                    <div class="pool-role" style="font-size: 0.6rem;">${job.job_code}</div>
+                `;
+                container.appendChild(el);
             });
         }
 
@@ -945,17 +1003,17 @@
             document.getElementById('available-staff-count').textContent = available.length;
 
             available.forEach(person => {
-                const card = document.createElement('div');
-                card.className = 'staff-avatar-lg';
-                card.draggable = true;
-                card.addEventListener('dragstart', (e) => handleDragStart(e, person, 'staff'));
-                card.addEventListener('dragend', handleDragEnd);
-                card.innerHTML = `
-                    <div class="avatar-circle">${person.name.charAt(0)}</div>
-                    <div class="avatar-name">${person.name}</div>
-                    <div class="avatar-role">${person.role}</div>
+                const el = document.createElement('div');
+                el.className = 'pool-item';
+                el.draggable = true;
+                el.addEventListener('dragstart', (e) => handleDragStart(e, person, 'staff'));
+                el.addEventListener('dragend', handleDragEnd);
+                el.innerHTML = `
+                    <div class="pool-avatar">${person.name.charAt(0)}</div>
+                    <div class="pool-name">${person.name}</div>
+                    <div class="pool-role">${person.role}</div>
                 `;
-                container.appendChild(card);
+                container.appendChild(el);
             });
         }
 
@@ -966,19 +1024,18 @@
             document.getElementById('fleet-count').textContent = store.vehicles.length;
 
             store.vehicles.forEach(vehicle => {
-                const card = document.createElement('div');
-                card.className = 'vehicle-card';
-                card.draggable = true;
-                card.addEventListener('dragstart', (e) => handleDragStart(e, vehicle, 'vehicle'));
-                card.addEventListener('dragend', handleDragEnd);
-                const icon = vehicle.vehicle_type === 'Truck' ? '🚚' : '🚐';
-                card.innerHTML = `
+                const el = document.createElement('div');
+                el.className = 'pool-item';
+                el.draggable = true;
+                el.addEventListener('dragstart', (e) => handleDragStart(e, vehicle, 'vehicle'));
+                el.addEventListener('dragend', handleDragEnd);
+                const icon = vehicle.vehicle_type === 'Truck' ? '🚚' : vehicle.vehicle_type === 'Ute' ? '🚐' : '🚙';
+                el.innerHTML = `
                     <div class="vehicle-icon">${icon}</div>
-                    <div class="vehicle-rego">${vehicle.rego}</div>
-                    <div class="vehicle-type">${vehicle.vehicle_type}</div>
-                    <div class="vehicle-status">${vehicle.status}</div>
+                    <div class="pool-name">${vehicle.rego}</div>
+                    <div class="pool-role">${vehicle.vehicle_type}</div>
                 `;
-                container.appendChild(card);
+                container.appendChild(el);
             });
         }
 
@@ -1005,9 +1062,9 @@
 
         document.getElementById('search-box').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
-            document.querySelectorAll('.job-card, .staff-avatar-lg').forEach(el => {
+            document.querySelectorAll('.job-item, .pool-item').forEach(el => {
                 const text = el.textContent.toLowerCase();
-                el.style.display = text.includes(term) ? 'block' : 'none';
+                el.style.display = text.includes(term) ? '' : 'none';
             });
         });
 
