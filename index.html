@@ -57,8 +57,10 @@ button,input,select,textarea{font:inherit}
 .job-meta{display:grid;gap:6px}
 .assigned-staff,.assigned-vehicle{display:flex;flex-direction:column;gap:4px;padding:7px;border-radius:9px;background:#f2f4f3;min-height:26px}
 .assigned-staff.drop-over,.assigned-vehicle.drop-over,.resource-list.drop-over{outline:4px dashed var(--pro-green);outline-offset:-5px}
-.chip{background:#111;color:#fff;padding:5px 7px;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
-.vehicle-chip{background:#fff;color:#111;padding:5px 7px;border:2px solid #cdd4d0;border-radius:999px;font-weight:900;font-size:11px;cursor:grab;user-select:none;display:inline-flex;width:fit-content}
+.chip,.vehicle-chip{display:inline-flex;align-items:center;gap:6px;width:fit-content;font-weight:900;font-size:11px;cursor:grab;user-select:none;border-radius:999px;padding:5px 7px}
+.chip{background:#111;color:#fff}
+.vehicle-chip{background:#fff;color:#111;border:2px solid #cdd4d0}
+.chip .remove,.vehicle-chip .remove{border:0;background:transparent;color:inherit;cursor:pointer;font-weight:900;font-size:13px;line-height:1;padding:0;margin-left:2px}
 .note{color:#555;font-size:10px;font-weight:800;line-height:1.2}
 .mini-job{width:160px;flex:0 0 auto}
 
@@ -250,14 +252,21 @@ function renderDays(){
 
 function statusClass(s){return s.toLowerCase()}
 
+function chipHtml(type,name,cls){
+  const label=type==="staff"?"×":"×";
+  return `<span class="${cls}" draggable="true" data-type="${type}" data-name="${name}">${name}<button type="button" class="remove" data-remove="${type}" data-name="${name}">${label}</button></span>`;
+}
+
 function jobCard(job){
   const card=document.createElement("article");
   card.className=`job-card ${statusClass(job.status)}`;
   card.draggable=true;
   card.dataset.type="job";
   card.dataset.id=job.id;
-  const staff=(job.staff||[]).map(name=>`<span class="chip" draggable="true" data-type="staff" data-name="${name}">${name}</span>`).join("");
-  const fleet=job.fleet?`<span class="vehicle-chip" draggable="true" data-type="fleet" data-name="${job.fleet}">${job.fleet}</span>`:"";
+
+  const staff=(job.staff||[]).map(name=>chipHtml("staff",name,"chip")).join("");
+  const fleet=job.fleet?chipHtml("fleet",job.fleet,"vehicle-chip"):"";
+
   card.innerHTML=`
     <div class="job-status">${job.status}</div>
     <div class="job-body">
@@ -295,14 +304,14 @@ function renderResources(){
   document.getElementById("availableStaffCount").textContent=availableStaff.length;
   const staffEl=document.getElementById("availableStaff");
   staffEl.innerHTML="";
-  availableStaff.forEach(name=>staffEl.innerHTML+=`<span class="chip" draggable="true" data-type="staff" data-name="${name}">${name}</span>`);
+  availableStaff.forEach(name=>staffEl.innerHTML+=chipHtml("staff",name,"chip"));
   if(!availableStaff.length)staffEl.innerHTML=`<span class="empty">No available staff</span>`;
 
   const availableFleet=data.fleet.filter(f=>!assignedFleet.has(f));
   document.getElementById("fleetCount").textContent=availableFleet.length;
   const fleetEl=document.getElementById("fleet");
   fleetEl.innerHTML="";
-  availableFleet.forEach(name=>fleetEl.innerHTML+=`<span class="vehicle-chip" draggable="true" data-type="fleet" data-name="${name}">${name}</span>`);
+  availableFleet.forEach(name=>fleetEl.innerHTML+=chipHtml("fleet",name,"vehicle-chip"));
   if(!availableFleet.length)fleetEl.innerHTML=`<span class="empty">No available fleet</span>`;
 }
 
@@ -317,17 +326,29 @@ function renderSummary(){
   document.getElementById("installCount").textContent=data.jobs.filter(j=>j.date===dayKey&&j.status==="Install").length;
 }
 
-function moveStaffToPool(name){
-  data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==name));
+function removeAssigned(type,name){
+  if(type==="staff"){
+    data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==name));
+  }else if(type==="fleet"){
+    data.jobs.forEach(j=>{if(j.fleet===name)j.fleet=null});
+  }
+  render();
 }
 
-function moveFleetToPool(name){
-  data.jobs.forEach(j=>{if(j.fleet===name)j.fleet=null});
+function bindRemoveButtons(){
+  document.querySelectorAll("[data-remove]").forEach(btn=>{
+    btn.onclick=(e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      removeAssigned(btn.dataset.remove,btn.dataset.name);
+    };
+  });
 }
 
 function bindDragDrop(){
   document.querySelectorAll("[draggable='true']").forEach(el=>{
     el.addEventListener("dragstart",e=>{
+      if(el.dataset.remove) return;
       dragged={type:el.dataset.type,id:el.dataset.id,name:el.dataset.name};
       el.classList.add("dragging");
       e.dataTransfer.effectAllowed="move";
@@ -358,21 +379,21 @@ function bindDragDrop(){
       if(dragged.type==="staff"){
         if(zone.dataset.zone==="jobStaff"){
           const job=data.jobs.find(j=>j.id===zone.dataset.id);
-          moveStaffToPool(dragged.name);
+          data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==dragged.name));
           job.staff=job.staff||[];
           if(!job.staff.includes(dragged.name))job.staff.push(dragged.name);
         }else if(zone.dataset.zone==="availableStaff"){
-          moveStaffToPool(dragged.name);
+          data.jobs.forEach(j=>j.staff=(j.staff||[]).filter(s=>s!==dragged.name));
         }
       }
 
       if(dragged.type==="fleet"){
         if(zone.dataset.zone==="jobFleet"){
           const job=data.jobs.find(j=>j.id===zone.dataset.id);
-          moveFleetToPool(dragged.name);
+          data.jobs.forEach(j=>{if(j.fleet===dragged.name)j.fleet=null});
           job.fleet=dragged.name;
         }else if(zone.dataset.zone==="fleet"){
-          moveFleetToPool(dragged.name);
+          data.jobs.forEach(j=>{if(j.fleet===dragged.name)j.fleet=null});
         }
       }
 
